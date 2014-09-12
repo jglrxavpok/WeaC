@@ -4,7 +4,7 @@ Contraction of Weak and C, WeaC is a langage targetted to be compiled to bytecod
 
 Exemple of code:
 
-'''c
+```c
 #include <time>
 #include <math>
 
@@ -22,10 +22,10 @@ int main()
 {
 	return out2(1,2);
 }
-'''
+```
 
 Generated output:
-'''
+```
 METHOD_START __MAIN__::out2 double(int;int;)
 LOAD_CONST 0
 VAR_STORE 0
@@ -56,6 +56,6 @@ LOAD_CONST 2
 METHOD_CALL __MAIN__::out2 *(int;int;)
 RETURN
 METHOD_END
-'''
+```
 
 Still doesn't handle POO nor structs nor arrays. (WIP)
