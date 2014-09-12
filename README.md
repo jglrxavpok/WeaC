@@ -4,6 +4,12 @@ Contraction of Weak and C, WeaC is a langage targetted to be compiled to bytecod
 
 Exemple of code:
 
+Header file:
+```c
+double out2(int a,int b);
+```
+
+Implementation code:
 ```c
 #include <time>
 #include <math>
