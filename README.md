@@ -1,7 +1,7 @@
 WeaC, or Wow not Even Arrays from C!
-
-Project just for fun (or maybe not ?), I don't indend to use it seriously
 ====
+Project just for fun (or maybe not ?), I don't indend to use it seriously
+
 Contraction of Weak and C, WeaC is a langage targetted to be compiled to bytecode (later usable by the JVM).
 
 Exemple of code:
