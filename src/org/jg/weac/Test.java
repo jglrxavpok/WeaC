@@ -11,7 +11,7 @@ public class Test
 		String headers = read("/test." + WeaCHelper.HEADER_EXTENSION);
 		try
 		{
-			new WeaCompiler().compileAndRun(headers, source);
+			new WeaCompiler().compileAndRun(headers, source, "test");
 		}
 		catch(WeaCException e)
 		{

@@ -16,4 +16,9 @@ public class LineNumberInstruction extends Instruction
 		return line;
 	}
 
+	public String toString()
+	{
+		return super.toString() + " " + line;
+	}
+
 }

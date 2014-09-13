@@ -322,7 +322,6 @@ public class WeaCHelper
 		{
 			tokensList.add(currentNumber);
 		}
-		tokensList.forEach(System.err::println);
 		return tokensList.toArray(new String[0]);
 	}
 

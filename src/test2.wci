@@ -1,3 +1,5 @@
+#include <test>
+
 void test2()
 {
 	out("Test !");

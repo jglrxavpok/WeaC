@@ -15,7 +15,7 @@ public class WeaCInterpreter implements OpCodes
 	{
 		this.included = included;
 		instructions.forEach(System.out::println);
-		System.out.println("exit code: " + invokeMethod(instructions, "__MAIN__", "main", "int()", new Stack<>()));
+		System.out.println("exit code: " + invokeMethod(instructions, "test", "main", "int()", new Stack<>()));
 	}
 
 	private WeaCValue invokeMethod(ArrayList<Instruction> insns, String owner, String methodName, String methodDesc, Stack<WeaCValue> stack) throws WeaCException
@@ -187,6 +187,10 @@ public class WeaCInterpreter implements OpCodes
 			}
 			var.value = val.value;
 			varMap.put(var.index, var);
+		}
+		else if(insn.getOpcode() == LINE_NUMBER)
+		{
+			line = ((LineNumberInstruction)insn).getLine();
 		}
 	}
 

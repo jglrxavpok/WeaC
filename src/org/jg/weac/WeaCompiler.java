@@ -24,16 +24,24 @@ public class WeaCompiler implements OpCodes
 		included.add(new StdLib());
 	}
 
-	private String	 currentLib	  = "__MAIN__";
-	private float	  sourceLine	  = 1;
-	private WeaCMethod compilingMethod = null;
+	private String		   currentLib	  = "";
+	private float			sourceLine	  = 1;
+	private WeaCMethod	   compilingMethod = null;
+	private WeaCPreprocessor preprocessor;
+	private Stack<String>	libs			= new Stack<>();
+	private String		   fileName;
+	private float			lastLine;
 
-	public void compileAndRun(String prototypes, String implementation) throws WeaCException
+	public void compileAndRun(String prototypes, String implementation, String fileName) throws WeaCException
 	{
+		this.fileName = fileName;
+		this.currentLib = fileName;
+		enterNewLib(fileName);
+		preprocessor = new WeaCPreprocessor();
 		prototypes = prototypes.replace("\r", "\n");
 		implementation = implementation.replace("\r", "\n");
-		included.add(parseLib(prototypes, "__MAIN__"));
-		currentLib = "__MAIN__";
+		preprocessor.parseHeader(this, 0, "", implementation, fileName);
+		currentLib = this.fileName;
 		char[] chars = implementation.toCharArray();
 		StringBuffer buffer = new StringBuffer();
 		ArrayList<Instruction> instructions = new ArrayList<>();
@@ -42,8 +50,6 @@ public class WeaCompiler implements OpCodes
 		String methodName = null;
 		ArrayList<String> methodArgsNames = new ArrayList<>();
 		ArrayList<String> methodArgsTypes = new ArrayList<>();
-
-		Stack<String> libs = new Stack<>();
 
 		for(int i = 0; i < chars.length; i++ )
 		{
@@ -62,29 +68,18 @@ public class WeaCompiler implements OpCodes
 					if(s.contains("<"))
 					{
 						String s1 = s2.substring(s2.indexOf("<") + 1, s2.length()).replace(" ", "");
-						if(included.stream().filter(lib -> lib.getName().equals(s2)).count() == 0)
+						if(!includeStandard(s1))
 						{
-							if(!includeStandard(s1))
-							{
-								String requestedHeader = read("/" + s1 + "." + WeaCHelper.HEADER_EXTENSION);
-								included.add(parseLib(requestedHeader, s1));
-								String requestedLib = read("/" + s1 + "." + WeaCHelper.IMPL_EXTENSION);
-								int end = i - s.length() - 1;
-								if(end < 0) end = 0;
-								implementation = implementation.substring(0, end).replaceFirst(s1, "") + requestedLib + "$$$$$$$$$$$$$$$$$" + implementation.substring(i + 1);
-								chars = implementation.toCharArray();
-								libs.push(currentLib);
-								currentLib = s1;
-
-							}
-							else
-							{
-								int end = i - s.length() - s.indexOf("#include") - 1;
-								if(end < 0) end = 0;
-								implementation = implementation.substring(0, end).replaceFirst(s1, "") + implementation.substring(i + 1);
-								chars = implementation.toCharArray();
-								i = i - s.length();
-							}
+							implementation = preprocessor.parseHeader(this, i, s, implementation, s1);
+							chars = implementation.toCharArray();
+						}
+						else
+						{
+							int end = i - s.length() - s.indexOf("#include") - 1;
+							if(end < 0) end = 0;
+							implementation = implementation.substring(0, end).replaceFirst(s1, "") + implementation.substring(i + 1);
+							chars = implementation.toCharArray();
+							i = i - s.length();
 						}
 						buffer.delete(0, buffer.length());
 					}
@@ -105,9 +100,7 @@ public class WeaCompiler implements OpCodes
 				if(buffer.toString().endsWith("$$$$$$$$$$$$$$$"))
 				{
 					buffer.delete(0, buffer.length());
-					System.out.println("old: " + currentLib);
-					if(!currentLib.equals("__MAIN__")) currentLib = libs.pop();
-					System.out.println("new: " + currentLib);
+					currentLib = libs.pop();
 				}
 				else
 					buffer.append(current);
@@ -121,8 +114,12 @@ public class WeaCompiler implements OpCodes
 				}
 				else if(current == '\n')
 				{
+					lastLine = sourceLine;
 					sourceLine += 0.5f;
-					; // Skips... FOR THE MOMENT
+					if((int)sourceLine != (int)lastLine)
+					{
+						instructions.add(new LineNumberInstruction((int)sourceLine));
+					}
 				}
 				else if(current == ';')
 				{
@@ -143,7 +140,12 @@ public class WeaCompiler implements OpCodes
 			{
 				if(current == '\n' || current == '\r')
 				{
-					sourceLine++ ;
+					lastLine = sourceLine;
+					sourceLine += 0.5f;
+					if((int)sourceLine != (int)lastLine)
+					{
+						instructions.add(new LineNumberInstruction((int)sourceLine));
+					}
 					continue;
 				}
 				else if(current == ' ')
@@ -153,10 +155,18 @@ public class WeaCompiler implements OpCodes
 						methodReturnType = buffer.toString();
 						buffer.delete(0, buffer.length());
 					}
+					else
+						buffer.append(current);
 				}
 				else if(current == '(')
 				{
 					methodName = buffer.toString();
+					if(methodName.contains("#include ") && methodName.contains(">"))
+					{
+						methodName = methodName.replace("#include ", "");
+						int index = methodName.indexOf(">") + 1;
+						methodName = methodName.substring(methodName.indexOf(" ", index) + 1);
+					}
 					methodArgsNames.clear();
 					methodArgsTypes.clear();
 					String argsStr = implementation.substring(i + 1, implementation.indexOf(")", i + 1));
@@ -195,7 +205,6 @@ public class WeaCompiler implements OpCodes
 					while(methodReturnType.startsWith("$"))
 						methodReturnType = methodReturnType.substring(1);
 					WeaCMethod method = new WeaCMethod(currentLib, methodName, methodReturnType + "(" + methodDesc + ")");
-					System.out.println("added: " + currentLib + "::" + methodName + " " + methodReturnType + "(" + methodDesc + ")");
 					method.addLocals(varList);
 					MethodStartInstruction insn = new MethodStartInstruction(method);
 					instructions.add(insn);
@@ -228,7 +237,7 @@ public class WeaCompiler implements OpCodes
 		}
 	}
 
-	private WeaCLib parseLib(String prototypesSource, String name)
+	public WeaCLib parseLib(String prototypesSource, String name)
 	{
 		String[] prototypes = prototypesSource.split(";");
 		ArrayList<WeaCMethod> methods = new ArrayList<>();
@@ -258,6 +267,7 @@ public class WeaCompiler implements OpCodes
 				methods.add(new WeaCMethod(name, mName, desc));
 			}
 		}
+		if(methods.isEmpty()) return null;
 		WeaCMethod[] methodsArray = methods.toArray(new WeaCMethod[0]);
 		WeaCLib lib = new WeaCLib()
 		{
@@ -283,7 +293,7 @@ public class WeaCompiler implements OpCodes
 		return lib;
 	}
 
-	private static String read(String file)
+	static String read(String file)
 	{
 		try
 		{
@@ -572,5 +582,16 @@ public class WeaCompiler implements OpCodes
 	private void throwCompileError(String message) throws WeaCompileException
 	{
 		throw new WeaCompileException(message + " " + WeaCHelper.getInfos((int)sourceLine));
+	}
+
+	public void enterNewLib(String headerName)
+	{
+		libs.push(currentLib);
+		currentLib = headerName;
+	}
+
+	public void include(WeaCLib lib)
+	{
+		included.add(lib);
 	}
 }
