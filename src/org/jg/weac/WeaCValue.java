@@ -8,8 +8,8 @@ public class WeaCValue
 
 	public WeaCValue(Object v, WeaCType type)
 	{
-		this.value = v;
 		this.type = type;
+		this.value = type.correctValue(v);
 	}
 
 	public WeaCValue()
@@ -18,7 +18,7 @@ public class WeaCValue
 
 	public String toString()
 	{
-		if(value == null) return "null";
+		if(value == null) return "nil";
 		return value.toString();
 	}
 

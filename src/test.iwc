@@ -7,7 +7,20 @@ double out2(int a,int b)
 	a = 0;
 	string c = "Test";
 	out(a-b);
-	out(a+c+"!"-"est");
+	boolean boolTest = false;
+	out(!boolTest);
+	if(!boolTest)
+	{
+		out(a+c+"!"-"est"+"1");
+		out(a+c+"!"-"est"+"2");
+		out(a+c+"!"-"est"+"3");
+		out(a+c+"!"-"est"+"4");
+		if(0)
+		{
+			out(a+c+"!"-"est"+"5");
+		}
+		out(a+c+"!"-"est"+"6");
+	}
 	double d = pow(pow(2,2),2);
 	return d;
 }

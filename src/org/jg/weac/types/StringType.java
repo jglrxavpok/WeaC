@@ -21,4 +21,8 @@ public class StringType extends WeaCType
 		return new WeaCValue(value.replace(b.value + "", ""), stringType);
 	}
 
+	public boolean equal(WeaCValue a, WeaCValue b)
+	{
+		return ("" + a.value).equals(b.value + "");
+	}
 }

@@ -369,12 +369,14 @@ public class WeaCType
 
 	private static HashMap<String, WeaCType> registred	= new HashMap<>();
 
-	public static final WeaCType			 intType	  = new NumberType("int");
-	public static final WeaCType			 longType	 = new NumberType("long");
+	public static final NumberType		   intType	  = new NumberType("int");
+	public static final NumberType		   longType	 = new NumberType("long");
 	public static final WeaCType			 voidType	 = new WeaCType("void");
-	public static final WeaCType			 floatType	= new NumberType("float");
-	public static final WeaCType			 doubleType   = new NumberType("double");
-	public static final WeaCType			 stringType   = new StringType("string");
+	public static final NumberType		   floatType	= new NumberType("float");
+	public static final NumberType		   doubleType   = new NumberType("double");
+	public static final StringType		   stringType   = new StringType("string");
+	public static final BoolType			 boolType	 = new BoolType("bool");
+	public static final BoolType			 booleanType  = new BoolType("boolean");
 	public static final WeaCType			 wildcardType = new WeaCType("*")
 														  {
 															  public boolean isCompatible(WeaCType other)
@@ -451,56 +453,66 @@ public class WeaCType
 
 	public WeaCValue add(WeaCValue a, WeaCValue b)
 	{
-		return a;
+		return null;
 	}
 
 	public WeaCValue sub(WeaCValue a, WeaCValue b)
 	{
-		return a;
+		return null;
 	}
 
 	public WeaCValue mul(WeaCValue a, WeaCValue b)
 	{
-		return a;
+		return null;
 	}
 
 	public WeaCValue div(WeaCValue a, WeaCValue b)
 	{
-		return a;
+		return null;
 	}
 
 	public WeaCValue mod(WeaCValue a, WeaCValue b)
 	{
-		return a;
+		return null;
 	}
 
 	public WeaCValue lsh(WeaCValue a, WeaCValue b)
 	{
-		return a;
+		return null;
 	}
 
 	public WeaCValue rsh(WeaCValue a, WeaCValue b)
 	{
-		return a;
+		return null;
 	}
 
 	public WeaCValue ursh(WeaCValue a, WeaCValue b)
 	{
-		return a;
+		return null;
 	}
 
 	public WeaCValue bitAnd(WeaCValue a, WeaCValue b)
 	{
-		return a;
+		return null;
 	}
 
 	public WeaCValue bitOr(WeaCValue a, WeaCValue b)
 	{
-		return a;
+		return null;
 	}
 
 	public WeaCValue bitXor(WeaCValue a, WeaCValue b)
 	{
-		return a;
+		return null;
+	}
+
+	public boolean equal(WeaCValue a, WeaCValue b)
+	{
+		return a.value == b.value;
+	}
+
+	public Object correctValue(Object v)
+	{
+		return v;
 	}
 }

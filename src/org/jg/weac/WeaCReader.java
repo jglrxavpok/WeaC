@@ -62,6 +62,12 @@ public class WeaCReader implements OpCodes
 				case VAR_STORE:
 					in = new StoreVariableInstruction(-1);
 					break;
+				case LABEL:
+					in = new LabelInstruction(null);
+					break;
+				case IF:
+					in = new IfInstruction(null);
+					break;
 				default:
 					in = new BaseInstruction(opcode);
 					break;
@@ -69,7 +75,6 @@ public class WeaCReader implements OpCodes
 			in.readInfos(buffer);
 			instructions.add(in);
 		}
-		instructions.forEach(System.out::println);
 		WeaCode code = new WeaCode(included, instructions);
 		return code;
 	}

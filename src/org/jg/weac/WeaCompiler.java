@@ -5,6 +5,7 @@ import java.util.*;
 
 import org.jg.weac.WeaCMethod.MethodDesc;
 import org.jg.weac.insn.*;
+import org.jg.weac.insn.LabelInstruction.Label;
 import org.jg.weac.insn.OperationInstruction.Operation;
 import org.jg.weac.libs.*;
 
@@ -31,6 +32,8 @@ public class WeaCompiler implements OpCodes
 	private Stack<String>	libs			= new Stack<>();
 	private String		   fileName;
 	private float			lastLine;
+	private int			  labelNbr;
+	private Stack<Label>	 labelStack	  = new Stack<>();
 
 	public WeaCode compile(String prototypes, String implementation, String fileName) throws WeaCException
 	{
@@ -40,6 +43,28 @@ public class WeaCompiler implements OpCodes
 		preprocessor = new WeaCPreprocessor();
 		prototypes = prototypes.replace("\r", "\n");
 		implementation = implementation.replace("\r", "\n");
+		String[] splitInput = implementation.split("\n");
+		String withoutComments = "";
+		for(int i = 0; i < splitInput.length; i++ )
+		{
+			if(splitInput[i].contains("//"))
+			{
+				splitInput[i] = splitInput[i].substring(splitInput[i].indexOf("//"));
+			}
+			withoutComments += splitInput[i] + "\n";
+		}
+		implementation = withoutComments;
+		withoutComments = "";
+		splitInput = prototypes.split("\n");
+		for(int i = 0; i < splitInput.length; i++ )
+		{
+			if(splitInput[i].contains("//"))
+			{
+				splitInput[i] = splitInput[i].substring(splitInput[i].indexOf("//"));
+			}
+			withoutComments += splitInput[i] + "\n";
+		}
+		prototypes = withoutComments;
 		preprocessor.parseHeader(this, 0, "", implementation, fileName);
 		currentLib = this.fileName;
 		char[] chars = implementation.toCharArray();
@@ -51,6 +76,7 @@ public class WeaCompiler implements OpCodes
 		ArrayList<String> methodArgsNames = new ArrayList<>();
 		ArrayList<String> methodArgsTypes = new ArrayList<>();
 
+		int blocks = 0;
 		for(int i = 0; i < chars.length; i++ )
 		{
 			char current = chars[i];
@@ -126,10 +152,22 @@ public class WeaCompiler implements OpCodes
 					endOfInsn(instructions, buffer.toString());
 					buffer.delete(0, buffer.length());
 				}
+				else if(current == '{')
+				{
+					blocks++ ;
+				}
 				else if(current == '}')
 				{
-					instructions.add(new BaseInstruction(METHOD_END));
-					blockType = BlockType.NONE;
+					if(blocks == 0)
+					{
+						instructions.add(new BaseInstruction(METHOD_END));
+						blockType = BlockType.NONE;
+					}
+					else
+					{
+						labelStack.pop().setNbr(labelNbr);
+						blocks-- ;
+					}
 				}
 				else
 				{
@@ -210,6 +248,7 @@ public class WeaCompiler implements OpCodes
 					instructions.add(insn);
 					buffer.delete(0, buffer.length());
 					compilingMethod = method;
+					blocks = 0;
 				}
 				else
 				{
@@ -313,6 +352,7 @@ public class WeaCompiler implements OpCodes
 
 	private void endOfInsn(ArrayList<Instruction> instructions, String buffer) throws WeaCException
 	{
+		instructions.add(new LabelInstruction(getNewLabel()));
 		int endOfName = buffer.length();
 		if(buffer.indexOf("(") >= 0)
 		{
@@ -433,6 +473,11 @@ public class WeaCompiler implements OpCodes
 		}
 	}
 
+	private Label getNewLabel()
+	{
+		return new Label(labelNbr++ );
+	}
+
 	private void newPush(ArrayList<Instruction> insns, String str) throws WeaCException
 	{
 		char[] chars = str.toCharArray();
@@ -490,22 +535,33 @@ public class WeaCompiler implements OpCodes
 				method = method.replace("\n", "").replace("\r", "");
 				if(method.length() > 0)
 				{
-					String mOwner = "std";
-
-					boolean found = false;
-					for(WeaCLib lib : included)
+					if(method.equals("if"))
 					{
-						mOwner = lib.getName();
-						if(WeaCHelper.isMethod(lib, method, desc))
+						if(WeaCHelper.countChar(desc, ';') != 1)
 						{
-							insns.add(new MethodCallInstruction(new WeaCMethod(mOwner, WeaCHelper.getMethodName(method), desc)));
-							found = true;
-							break;
+							throwCompileError("If conditions only accept one argument");
 						}
+						insns.add(new IfInstruction(labelStack.push(new Label(-1))));
 					}
-					if(!found)
+					else
 					{
-						throwCompileError("Unknown method: " + method + " " + desc);
+						String mOwner = "std";
+
+						boolean found = false;
+						for(WeaCLib lib : included)
+						{
+							mOwner = lib.getName();
+							if(WeaCHelper.isMethod(lib, method, desc))
+							{
+								insns.add(new MethodCallInstruction(new WeaCMethod(mOwner, WeaCHelper.getMethodName(method), desc)));
+								found = true;
+								break;
+							}
+						}
+						if(!found)
+						{
+							throwCompileError("Unknown method: " + method + " " + desc);
+						}
 					}
 				}
 			}
@@ -548,9 +604,23 @@ public class WeaCompiler implements OpCodes
 				{
 					if(s != null && !s.equals("null"))
 					{
+						boolean invert = false;
+						if(s.startsWith("!"))
+						{
+							invert = true;
+							s = s.substring(1);
+						}
 						if(s.startsWith("\"") && s.endsWith("\""))
 						{
 							insns.add(new LoadConstantInstruction(new WeaCValue(s.substring(1, s.length() - 1), WeaCType.stringType)));
+						}
+						else if(s.equals("true") || s.equals("True") || s.equals("TRUE"))
+						{
+							insns.add(new LoadConstantInstruction(new WeaCValue(invert ? false : true, WeaCType.boolType)));
+						}
+						else if(s.equals("false") || s.equals("False") || s.equals("FALSE"))
+						{
+							insns.add(new LoadConstantInstruction(new WeaCValue(invert ? true : false, WeaCType.boolType)));
 						}
 						else if(compilingMethod != null)
 						{
@@ -561,12 +631,17 @@ public class WeaCompiler implements OpCodes
 								{
 									found = true;
 									insns.add(new LoadVariableInstruction(variable.index));
+									if(invert) insns.add(new BaseInstruction(INVERT_BOOL));
 								}
 							}
 							if(!found) throwCompileError(s + " cannot be resolved to a variable in " + var);
 						}
 						else
 							throwCompileError("Global variables are not allowed");
+					}
+					else if(s.equals("null"))
+					{
+						insns.add(new BaseInstruction(LOAD_NULL));
 					}
 				}
 			}

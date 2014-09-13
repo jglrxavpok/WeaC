@@ -3,6 +3,7 @@ package org.jg.weac;
 import java.util.*;
 
 import org.jg.weac.insn.*;
+import org.jg.weac.insn.LabelInstruction.Label;
 import org.jg.weac.insn.OperationInstruction.Operation;
 
 public class WeaCInterpreter implements OpCodes
@@ -10,6 +11,8 @@ public class WeaCInterpreter implements OpCodes
 
 	private ArrayList<WeaCLib> included;
 	private int				line;
+	private Label			  currentLabel;
+	private Label			  skipTo;
 
 	public void run(WeaCode code) throws WeaCException
 	{
@@ -106,153 +109,189 @@ public class WeaCInterpreter implements OpCodes
 
 	private void execute(ArrayList<Instruction> insns, Instruction insn, Stack<WeaCValue> stack, HashMap<Integer, WeaCVariable> varMap) throws WeaCException
 	{
-		if(insn.getOpcode() == LOAD_CONST)
+		if(insn.getOpcode() == LABEL)
 		{
-			WeaCValue constant = ((LoadConstantInstruction)insn).getConstant();
-			stack.push(constant);
-		}
-		else if(insn.getOpcode() == METHOD_CALL)
-		{
-			MethodCallInstruction callInsn = (MethodCallInstruction)insn;
-			WeaCValue returned = invokeMethod(insns, callInsn.getMethod().getOwner(), callInsn.getMethod().getName(), callInsn.getMethod().getDesc().toString(), stack);
-			if(returned != null) stack.push(returned);
-		}
-		else if(insn.getOpcode() == RETURN)
-		{
-			WeaCValue returned = stack.pop();
-			stack.push(returned); // Useless, i do know, thx
-		}
-		else if(insn.getOpcode() == OPERATION)
-		{
-			WeaCValue b = stack.pop();
-			WeaCValue a = stack.pop();
-			Operation op = ((OperationInstruction)insn).getOperation();
-			try
+			currentLabel = ((LabelInstruction)insn).getLabel();
+			if(currentLabel.equals(skipTo))
 			{
-				if(op == Operation.ADDITION)
-				{
-					stack.push(a.type.add(a, b));
-				}
-				else if(op == Operation.SUBTRACTION)
-				{
-					stack.push(a.type.sub(a, b));
-				}
-				else if(op == Operation.MULTIPLICATION)
-				{
-					stack.push(a.type.mul(a, b));
-				}
-				else if(op == Operation.DIVISION)
-				{
-					stack.push(a.type.div(a, b));
-				}
-				else if(op == Operation.MODULO)
-				{
-					stack.push(a.type.mod(a, b));
-				}
-				else if(op == Operation.LEFT_SHIFT)
-				{
-					stack.push(a.type.lsh(a, b));
-				}
-				else if(op == Operation.RIGHT_SHIFT)
-				{
-					stack.push(a.type.rsh(a, b));
-				}
-				else if(op == Operation.UNSIGNED_RIGHT_SHIFT)
-				{
-					stack.push(a.type.ursh(a, b));
-				}
-				else if(op == Operation.BITWISE_AND)
-				{
-					stack.push(a.type.bitAnd(a, b));
-				}
-				else if(op == Operation.BITWISE_OR)
-				{
-					stack.push(a.type.bitOr(a, b));
-				}
-				else if(op == Operation.BITWISE_XOR)
-				{
-					stack.push(a.type.bitXor(a, b));
-				}
-
-				if(stack.peek() == null) throw new Exception();
+				skipTo = null;
 			}
-			catch(Exception e)
-			{
-				try
-				{
-					if(op == Operation.ADDITION)
-					{
-						stack.push(b.type.add(a, b));
-					}
-					else if(op == Operation.SUBTRACTION)
-					{
-						stack.push(b.type.sub(a, b));
-					}
-					else if(op == Operation.MULTIPLICATION)
-					{
-						stack.push(b.type.mul(a, b));
-					}
-					else if(op == Operation.DIVISION)
-					{
-						stack.push(b.type.div(a, b));
-					}
-					else if(op == Operation.MODULO)
-					{
-						stack.push(b.type.mod(a, b));
-					}
-					else if(op == Operation.LEFT_SHIFT)
-					{
-						stack.push(b.type.lsh(a, b));
-					}
-					else if(op == Operation.RIGHT_SHIFT)
-					{
-						stack.push(b.type.rsh(a, b));
-					}
-					else if(op == Operation.UNSIGNED_RIGHT_SHIFT)
-					{
-						stack.push(b.type.ursh(a, b));
-					}
-					else if(op == Operation.BITWISE_AND)
-					{
-						stack.push(b.type.bitAnd(a, b));
-					}
-					else if(op == Operation.BITWISE_OR)
-					{
-						stack.push(b.type.bitOr(a, b));
-					}
-					else if(op == Operation.BITWISE_XOR)
-					{
-						stack.push(b.type.bitXor(a, b));
-					}
-
-					if(stack.peek() == null) throw new Exception();
-				}
-				catch(Exception e1)
-				{
-					WeaCHelper.throwError("Invalid operand '" + op.getID() + "' between " + a.type.getID() + " and " + b.type.getID() + " types", line);
-				}
-			}
-		}
-		else if(insn.getOpcode() == VAR_LOAD)
-		{
-			WeaCVariable var = varMap.get(((LoadVariableInstruction)insn).getVarIndex());
-			stack.push(var);
-		}
-		else if(insn.getOpcode() == VAR_STORE)
-		{
-			WeaCVariable var = varMap.get(((StoreVariableInstruction)insn).getVarIndex());
-			WeaCValue val = stack.pop();
-			if(!var.type.isCompatible(val.type))
-			{
-				WeaCHelper.throwError("Cannot cast " + val.type.getID() + " to " + var.type.getID(), line);
-			}
-			var.value = val.value;
-			varMap.put(var.index, var);
 		}
 		else if(insn.getOpcode() == LINE_NUMBER)
 		{
 			line = ((LineNumberInstruction)insn).getLine();
 		}
-	}
+		else if(skipTo == null)
+		{
+			if(insn.getOpcode() == LOAD_CONST)
+			{
+				WeaCValue constant = ((LoadConstantInstruction)insn).getConstant();
+				stack.push(constant);
+			}
+			else if(insn.getOpcode() == METHOD_CALL)
+			{
+				MethodCallInstruction callInsn = (MethodCallInstruction)insn;
+				WeaCValue returned = invokeMethod(insns, callInsn.getMethod().getOwner(), callInsn.getMethod().getName(), callInsn.getMethod().getDesc().toString(), stack);
+				if(returned != null) stack.push(returned);
+			}
+			else if(insn.getOpcode() == RETURN)
+			{
+				WeaCValue returned = stack.pop();
+				stack.push(returned); // Useless, i do know, thx
+			}
+			else if(insn.getOpcode() == OPERATION)
+			{
+				WeaCValue b = stack.pop();
+				WeaCValue a = stack.pop();
+				Operation op = ((OperationInstruction)insn).getOperation();
+				try
+				{
+					if(op == Operation.ADDITION)
+					{
+						stack.push(a.type.add(a, b));
+					}
+					else if(op == Operation.SUBTRACTION)
+					{
+						stack.push(a.type.sub(a, b));
+					}
+					else if(op == Operation.MULTIPLICATION)
+					{
+						stack.push(a.type.mul(a, b));
+					}
+					else if(op == Operation.DIVISION)
+					{
+						stack.push(a.type.div(a, b));
+					}
+					else if(op == Operation.MODULO)
+					{
+						stack.push(a.type.mod(a, b));
+					}
+					else if(op == Operation.LEFT_SHIFT)
+					{
+						stack.push(a.type.lsh(a, b));
+					}
+					else if(op == Operation.RIGHT_SHIFT)
+					{
+						stack.push(a.type.rsh(a, b));
+					}
+					else if(op == Operation.UNSIGNED_RIGHT_SHIFT)
+					{
+						stack.push(a.type.ursh(a, b));
+					}
+					else if(op == Operation.BITWISE_AND)
+					{
+						stack.push(a.type.bitAnd(a, b));
+					}
+					else if(op == Operation.BITWISE_OR)
+					{
+						stack.push(a.type.bitOr(a, b));
+					}
+					else if(op == Operation.BITWISE_XOR)
+					{
+						stack.push(a.type.bitXor(a, b));
+					}
 
+					if(stack.peek() == null) throw new Exception();
+				}
+				catch(Exception e)
+				{
+					try
+					{
+						if(op == Operation.ADDITION)
+						{
+							stack.push(b.type.add(a, b));
+						}
+						else if(op == Operation.SUBTRACTION)
+						{
+							stack.push(b.type.sub(a, b));
+						}
+						else if(op == Operation.MULTIPLICATION)
+						{
+							stack.push(b.type.mul(a, b));
+						}
+						else if(op == Operation.DIVISION)
+						{
+							stack.push(b.type.div(a, b));
+						}
+						else if(op == Operation.MODULO)
+						{
+							stack.push(b.type.mod(a, b));
+						}
+						else if(op == Operation.LEFT_SHIFT)
+						{
+							stack.push(b.type.lsh(a, b));
+						}
+						else if(op == Operation.RIGHT_SHIFT)
+						{
+							stack.push(b.type.rsh(a, b));
+						}
+						else if(op == Operation.UNSIGNED_RIGHT_SHIFT)
+						{
+							stack.push(b.type.ursh(a, b));
+						}
+						else if(op == Operation.BITWISE_AND)
+						{
+							stack.push(b.type.bitAnd(a, b));
+						}
+						else if(op == Operation.BITWISE_OR)
+						{
+							stack.push(b.type.bitOr(a, b));
+						}
+						else if(op == Operation.BITWISE_XOR)
+						{
+							stack.push(b.type.bitXor(a, b));
+						}
+
+						if(stack.peek() == null) throw new Exception();
+					}
+					catch(Exception e1)
+					{
+						WeaCHelper.throwError("Invalid operand '" + op.getID() + "' between " + a.type.getID() + " and " + b.type.getID() + " types", line);
+					}
+				}
+			}
+			else if(insn.getOpcode() == VAR_LOAD)
+			{
+				WeaCVariable var = varMap.get(((LoadVariableInstruction)insn).getVarIndex());
+				stack.push(var);
+			}
+			else if(insn.getOpcode() == VAR_STORE)
+			{
+				WeaCVariable var = varMap.get(((StoreVariableInstruction)insn).getVarIndex());
+				WeaCValue val = stack.pop();
+				if(!var.type.isCompatible(val.type))
+				{
+					WeaCHelper.throwError("Cannot cast " + val.type.getID() + " to " + var.type.getID(), line);
+				}
+				var.value = var.type.correctValue(val.value);
+				varMap.put(var.index, var);
+			}
+			else if(insn.getOpcode() == LOAD_NULL)
+			{
+				stack.push(new WeaCValue(null, WeaCType.wildcardType));
+			}
+			else if(insn.getOpcode() == IF)
+			{
+				WeaCValue val = stack.pop();
+				if(!WeaCType.boolType.equal(val, WeaCType.boolType.TRUE))
+				{
+					skipTo = ((IfInstruction)insn).getGotoLabel();
+				}
+			}
+			else if(insn.getOpcode() == INVERT_BOOL)
+			{
+				WeaCValue val = stack.pop();
+				if(!WeaCType.boolType.isCompatible(val.type))
+				{
+					WeaCHelper.throwError("Cannot cast " + val.type + " to bool", line);
+				}
+				WeaCValue newVal = new WeaCValue(!(Boolean)val.value, WeaCType.boolType);
+				stack.push(newVal);
+			}
+			else
+			{
+				System.out.println("unhandled instruction: " + insn);
+			}
+		}
+	}
 }
