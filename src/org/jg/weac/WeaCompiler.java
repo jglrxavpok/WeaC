@@ -677,7 +677,7 @@ public class WeaCompiler implements OpCodes
 
 				if(!arrayIndices.isEmpty())
 				{
-					insns.add(new BaseInstruction(ARRAY_STORE));
+					insns.add(new ArrayStoreInstruction(ARRAY_STORE));
 				}
 			}
 		}
