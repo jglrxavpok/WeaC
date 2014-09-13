@@ -2,6 +2,8 @@ package org.jg.weac.insn;
 
 import java.io.*;
 
+import org.jg.weac.*;
+
 public class OperationInstruction extends Instruction
 {
 

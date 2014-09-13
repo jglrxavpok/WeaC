@@ -2,6 +2,8 @@ package org.jg.weac.insn;
 
 import java.io.*;
 
+import org.jg.weac.*;
+
 public abstract class VarInstruction extends Instruction
 {
 
@@ -11,6 +13,11 @@ public abstract class VarInstruction extends Instruction
 	{
 		super(opcode);
 		this.varIndex = varIndex;
+	}
+
+	public String toString()
+	{
+		return super.toString() + " " + varIndex;
 	}
 
 	public int getVarIndex()

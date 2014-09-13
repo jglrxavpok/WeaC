@@ -1,4 +1,4 @@
-package org.jg.weac.insn;
+package org.jg.weac;
 
 import java.io.*;
 import java.nio.*;

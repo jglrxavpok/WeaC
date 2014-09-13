@@ -77,6 +77,8 @@ public class WeaCompiler implements OpCodes
 		ArrayList<String> methodArgsTypes = new ArrayList<>();
 
 		int blocks = 0;
+
+		boolean inVariable = false;
 		for(int i = 0; i < chars.length; i++ )
 		{
 			char current = chars[i];
@@ -147,16 +149,22 @@ public class WeaCompiler implements OpCodes
 						instructions.add(new LineNumberInstruction((int)sourceLine));
 					}
 				}
+				else if(current == '=')
+				{
+					buffer.append(current);
+					inVariable = true;
+				}
 				else if(current == ';')
 				{
 					endOfInsn(instructions, buffer.toString());
 					buffer.delete(0, buffer.length());
+					inVariable = false;
 				}
-				else if(current == '{')
+				else if(current == '{' && !inVariable)
 				{
 					blocks++ ;
 				}
-				else if(current == '}')
+				else if(current == '}' && !inVariable)
 				{
 					if(blocks == 0)
 					{
@@ -484,6 +492,12 @@ public class WeaCompiler implements OpCodes
 		StringBuffer buffer = new StringBuffer();
 		Stack<String> methodNames = new Stack<>();
 		Stack<String> argStack = new Stack<>();
+		int array = 0;
+		System.out.println(">>>>>>" + str);
+		while(str.charAt(0) == ' ')
+			str = str.substring(1);
+		while(str.charAt(str.length() - 1) == ' ')
+			str = str.substring(0, str.length() - 1);
 		for(int i = 0; i < chars.length; i++ )
 		{
 			char current = chars[i];
@@ -498,15 +512,20 @@ public class WeaCompiler implements OpCodes
 			}
 			else if(current == ',')
 			{
-				if(buffer.length() > 0)
+				if(array == 0)
 				{
-					argStack.push(buffer.toString());
+					if(buffer.length() > 0)
+					{
+						argStack.push(buffer.toString());
+					}
+					else
+					{
+						argStack.push("null");
+					}
+					buffer.delete(0, buffer.length());
 				}
 				else
-				{
-					argStack.push("null");
-				}
-				buffer.delete(0, buffer.length());
+					buffer.append(current);
 			}
 			else if(current == ')')
 			{
@@ -580,9 +599,20 @@ public class WeaCompiler implements OpCodes
 	{
 		ArrayList<String> l = WeaCHelper.getRPNOutputFromInfix(var, (int)sourceLine);
 		WeaCType type = null;
+		Stack<Integer> arrayIndices = new Stack<>();
 		for(String s : l)
 		{
 			if(s.equals(",")) continue;
+			if(s.equals("{"))
+			{
+				arrayIndices.push(0);
+				continue;
+			}
+			else if(s.equals("}"))
+			{
+				arrayIndices.pop();
+				continue;
+			}
 			Operation op = Operation.get(s);
 			if(op != null)
 			{
@@ -643,6 +673,11 @@ public class WeaCompiler implements OpCodes
 					{
 						insns.add(new BaseInstruction(LOAD_NULL));
 					}
+				}
+
+				if(!arrayIndices.isEmpty())
+				{
+					insns.add(new BaseInstruction(ARRAY_STORE));
 				}
 			}
 		}

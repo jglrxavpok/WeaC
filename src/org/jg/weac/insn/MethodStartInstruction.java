@@ -1,39 +1,13 @@
 package org.jg.weac.insn;
 
-import java.io.*;
-
 import org.jg.weac.*;
 
-public class MethodStartInstruction extends Instruction
+public class MethodStartInstruction extends MethodInstruction
 {
-
-	private WeaCMethod method;
 
 	public MethodStartInstruction(WeaCMethod method)
 	{
-		super(OpCodes.METHOD_START);
-		this.method = method;
-	}
-
-	public WeaCMethod getMethod()
-	{
-		return method;
-	}
-
-	public String toString()
-	{
-		return super.toString() + " " + method.getOwner() + "::" + method.getName() + " " + method.getDesc();
-	}
-
-	public void writeInfos(WeaCBuffer buffer) throws IOException
-	{
-		method.writeInfos(buffer);
-	}
-
-	public void readInfos(WeaCBuffer buffer) throws IOException
-	{
-		method = new WeaCMethod("", "", "void()");
-		method.readInfos(buffer);
+		super(OpCodes.METHOD_START, method);
 	}
 
 }

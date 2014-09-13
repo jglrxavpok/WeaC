@@ -18,6 +18,9 @@ public interface OpCodes
 	public static final int		 IF		   = 0xA;
 	public static final int		 LOAD_NULL	= 0xB;
 	public static final int		 INVERT_BOOL  = 0xC;
+	public static final int		 GOTO		 = 0xD;
+	public static final int		 ARRAY_STORE  = 0xE;
+	public static final int		 NEW_ARRAY	= 0xF;
 
 	static HashMap<Integer, String> nameMap	  = new HashMap<>();
 
@@ -38,6 +41,9 @@ public interface OpCodes
 			nameMap.put(IF, "IF");
 			nameMap.put(LOAD_NULL, "LOAD_NULL");
 			nameMap.put(INVERT_BOOL, "INVERT_BOOL");
+			nameMap.put(GOTO, "GOTO");
+			nameMap.put(ARRAY_STORE, "ARRAY_STORE");
+			nameMap.put(NEW_ARRAY, "NEW_ARRAY");
 		}
 		if(!nameMap.containsKey(opcode))
 		{

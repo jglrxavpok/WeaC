@@ -403,6 +403,11 @@ public class WeaCType
 		{
 			return registred.get(id);
 		}
+		if(id.endsWith("[]"))
+		{
+			registred.put(id, new ArrayType(id));
+			return registred.get(id);
+		}
 		return null;
 	}
 
@@ -430,7 +435,7 @@ public class WeaCType
 		{
 			return false;
 		}
-		return other.compatibles.contains(this) || other == this;
+		return other.compatibles.contains(this) || other == this || other == wildcardType;
 	}
 
 	public void addCompatible(WeaCType other)
