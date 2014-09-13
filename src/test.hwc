@@ -1,0 +1,4 @@
+#ifndef H_TEST
+int main2();
+double out2(int a,int b);
+#endif

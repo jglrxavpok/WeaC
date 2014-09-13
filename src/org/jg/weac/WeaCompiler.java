@@ -32,7 +32,7 @@ public class WeaCompiler implements OpCodes
 	private String		   fileName;
 	private float			lastLine;
 
-	public void compileAndRun(String prototypes, String implementation, String fileName) throws WeaCException
+	public WeaCode compile(String prototypes, String implementation, String fileName) throws WeaCException
 	{
 		this.fileName = fileName;
 		this.currentLib = fileName;
@@ -218,23 +218,18 @@ public class WeaCompiler implements OpCodes
 			}
 		}
 
-		new WeaCInterpreter().run(included, instructions);
+		return new WeaCode(included, instructions);
 	}
 
 	private boolean includeStandard(String s1)
 	{
-		switch(s1)
+		WeaCLib standardLib = WeaCLib.getStandardLib(s1);
+		if(standardLib != null)
 		{
-			case "math":
-				included.add(new MathLib());
-
-			case "time":
-				included.add(new TimeLib());
-				return true;
-
-			default:
-				return false;
+			included.add(standardLib);
+			return true;
 		}
+		return false;
 	}
 
 	public WeaCLib parseLib(String prototypesSource, String name)

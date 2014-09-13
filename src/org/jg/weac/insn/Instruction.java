@@ -1,5 +1,7 @@
 package org.jg.weac.insn;
 
+import java.io.*;
+
 public abstract class Instruction implements OpCodes
 {
 
@@ -18,5 +20,15 @@ public abstract class Instruction implements OpCodes
 	public String toString()
 	{
 		return OpCodes.toString(opcode);
+	}
+
+	public void writeInfos(WeaCBuffer buffer) throws IOException
+	{
+
+	}
+
+	public void readInfos(WeaCBuffer buffer) throws IOException
+	{
+
 	}
 }

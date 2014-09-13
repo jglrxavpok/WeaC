@@ -4,8 +4,9 @@ import java.util.*;
 
 public class WeaCHelper
 {
-	public static final String HEADER_EXTENSION = "wch";
-	public static final String IMPL_EXTENSION   = "wci";
+	public static final String HEADER_EXTENSION   = "hwc";
+	public static final String IMPL_EXTENSION	 = "iwc";
+	public static final String COMPILED_EXTENSION = "compwc";
 
 	public static int countChar(String s, char c)
 	{

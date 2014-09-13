@@ -1,5 +1,7 @@
 package org.jg.weac.insn;
 
+import java.io.*;
+
 public class LoadVariableInstruction extends Instruction
 {
 
@@ -19,6 +21,16 @@ public class LoadVariableInstruction extends Instruction
 	public String toString()
 	{
 		return super.toString() + " " + varIndex;
+	}
+
+	public void writeInfos(WeaCBuffer buffer) throws IOException
+	{
+		buffer.writeInt(varIndex);
+	}
+
+	public void readInfos(WeaCBuffer buffer) throws IOException
+	{
+		varIndex = buffer.readInt();
 	}
 
 }

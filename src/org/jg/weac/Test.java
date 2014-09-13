@@ -11,9 +11,16 @@ public class Test
 		String headers = read("/test." + WeaCHelper.HEADER_EXTENSION);
 		try
 		{
-			new WeaCompiler().compileAndRun(headers, source, "test");
+			WeaCode code = new WeaCompiler().compile(headers, source, "test");
+			File file = new File(".", "test." + WeaCHelper.COMPILED_EXTENSION);
+			FileOutputStream out = new FileOutputStream(file);
+			new WeaCWriter(code).write(out);
+			out.flush();
+			out.close();
+			code = new WeaCReader().read(new FileInputStream(file));
+			new WeaCInterpreter().run(code);
 		}
-		catch(WeaCException e)
+		catch(Exception e)
 		{
 			e.printStackTrace();
 		}

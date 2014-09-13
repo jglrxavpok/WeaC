@@ -1,5 +1,7 @@
 package org.jg.weac.insn;
 
+import java.io.*;
+
 public class OperationInstruction extends Instruction
 {
 
@@ -48,5 +50,15 @@ public class OperationInstruction extends Instruction
 	public String toString()
 	{
 		return super.toString() + " " + operation.getID();
+	}
+
+	public void writeInfos(WeaCBuffer buffer) throws IOException
+	{
+		buffer.writeString(operation.getID());
+	}
+
+	public void readInfos(WeaCBuffer buffer) throws IOException
+	{
+		operation = Operation.get(buffer.readString());
 	}
 }

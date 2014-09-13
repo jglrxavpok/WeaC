@@ -1,0 +1,19 @@
+#include <time>
+#include <math>
+#include <test2>
+
+double out2(int a,int b)
+{
+	a = 0;
+	string c = "Test";
+	out(a-b);
+	out(a+c+"!"-"est");
+	double d = pow(pow(2,2),2);
+	return d;
+}
+
+int main()
+{
+	test2();
+	return out2(1,2);
+}

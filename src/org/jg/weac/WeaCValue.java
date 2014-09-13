@@ -12,6 +12,10 @@ public class WeaCValue
 		this.type = type;
 	}
 
+	public WeaCValue()
+	{
+	}
+
 	public String toString()
 	{
 		if(value == null) return "null";

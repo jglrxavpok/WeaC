@@ -1,5 +1,7 @@
 package org.jg.weac.insn;
 
+import java.io.*;
+
 public class LineNumberInstruction extends Instruction
 {
 
@@ -19,6 +21,16 @@ public class LineNumberInstruction extends Instruction
 	public String toString()
 	{
 		return super.toString() + " " + line;
+	}
+
+	public void writeInfos(WeaCBuffer buffer) throws IOException
+	{
+		buffer.writeInt(line);
+	}
+
+	public void readInfos(WeaCBuffer buffer) throws IOException
+	{
+		line = buffer.readInt();
 	}
 
 }

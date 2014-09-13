@@ -11,11 +11,11 @@ public class WeaCInterpreter implements OpCodes
 	private ArrayList<WeaCLib> included;
 	private int				line;
 
-	public void run(ArrayList<WeaCLib> included, ArrayList<Instruction> instructions) throws WeaCException
+	public void run(WeaCode code) throws WeaCException
 	{
-		this.included = included;
-		instructions.forEach(System.out::println);
-		System.out.println("exit code: " + invokeMethod(instructions, "test", "main", "int()", new Stack<>()));
+		this.included = code.getRequiredLibs();
+		code.getInstructions().forEach(System.out::println);
+		System.out.println("exit code: " + invokeMethod(code.getInstructions(), "test", "main", "int()", new Stack<>()));
 	}
 
 	private WeaCValue invokeMethod(ArrayList<Instruction> insns, String owner, String methodName, String methodDesc, Stack<WeaCValue> stack) throws WeaCException
