@@ -24,6 +24,7 @@ public class WeaCompiler implements OpCodes
 		included.add(new StdLib());
 	}
 
+	private String	 currentLib	  = "__MAIN__";
 	private float	  sourceLine	  = 1;
 	private WeaCMethod compilingMethod = null;
 
@@ -32,6 +33,7 @@ public class WeaCompiler implements OpCodes
 		prototypes = prototypes.replace("\r", "\n");
 		implementation = implementation.replace("\r", "\n");
 		included.add(parseLib(prototypes, "__MAIN__"));
+		currentLib = "__MAIN__";
 		char[] chars = implementation.toCharArray();
 		StringBuffer buffer = new StringBuffer();
 		ArrayList<Instruction> instructions = new ArrayList<>();
@@ -40,6 +42,8 @@ public class WeaCompiler implements OpCodes
 		String methodName = null;
 		ArrayList<String> methodArgsNames = new ArrayList<>();
 		ArrayList<String> methodArgsTypes = new ArrayList<>();
+
+		Stack<String> libs = new Stack<>();
 
 		for(int i = 0; i < chars.length; i++ )
 		{
@@ -67,8 +71,10 @@ public class WeaCompiler implements OpCodes
 								String requestedLib = read("/" + s1 + "." + WeaCHelper.IMPL_EXTENSION);
 								int end = i - s.length() - 1;
 								if(end < 0) end = 0;
-								implementation = implementation.substring(0, end).replaceFirst(s1, "") + requestedLib + implementation.substring(i + 1);
+								implementation = implementation.substring(0, end).replaceFirst(s1, "") + requestedLib + "$$$$$$$$$$$$$$$$$" + implementation.substring(i + 1);
 								chars = implementation.toCharArray();
+								libs.push(currentLib);
+								currentLib = s1;
 
 							}
 							else
@@ -94,6 +100,18 @@ public class WeaCompiler implements OpCodes
 		{
 			char current = chars[i];
 			if(current == '\t') continue;
+			if(current == '$')
+			{
+				if(buffer.toString().endsWith("$$$$$$$$$$$$$$$"))
+				{
+					buffer.delete(0, buffer.length());
+					System.out.println("old: " + currentLib);
+					if(!currentLib.equals("__MAIN__")) currentLib = libs.pop();
+					System.out.println("new: " + currentLib);
+				}
+				else
+					buffer.append(current);
+			}
 			if(blockType == BlockType.METHOD_DEFINITION)
 			{
 				if(current == ' ')
@@ -174,7 +192,10 @@ public class WeaCompiler implements OpCodes
 					}
 					blockType = BlockType.METHOD_DEFINITION;
 					i = implementation.indexOf("{", i + 1) + 1;
-					WeaCMethod method = new WeaCMethod("__MAIN__", methodName, methodReturnType + "(" + methodDesc + ")");
+					while(methodReturnType.startsWith("$"))
+						methodReturnType = methodReturnType.substring(1);
+					WeaCMethod method = new WeaCMethod(currentLib, methodName, methodReturnType + "(" + methodDesc + ")");
+					System.out.println("added: " + currentLib + "::" + methodName + " " + methodReturnType + "(" + methodDesc + ")");
 					method.addLocals(varList);
 					MethodStartInstruction insn = new MethodStartInstruction(method);
 					instructions.add(insn);
@@ -213,7 +234,6 @@ public class WeaCompiler implements OpCodes
 		ArrayList<WeaCMethod> methods = new ArrayList<>();
 		for(String prototype : prototypes)
 		{
-			// Vector sub(Vector a, Vector b);
 			if(prototype.length() > 0 && !prototype.equals("\n"))
 			{
 				prototype = prototype.replace("  ", " ").replace("\n", "").replace("\r", "").replace("\t", "");
@@ -252,6 +272,11 @@ public class WeaCompiler implements OpCodes
 			public WeaCMethod[] getMethods()
 			{
 				return methodsArray;
+			}
+
+			public boolean isCompiledDirectly()
+			{
+				return true;
 			}
 
 		};
@@ -457,6 +482,7 @@ public class WeaCompiler implements OpCodes
 				}
 				desc += ")";
 				String method = methodNames.pop();
+				method = method.replace("\n", "").replace("\r", "");
 				if(method.length() > 0)
 				{
 					String mOwner = "std";
@@ -532,7 +558,7 @@ public class WeaCompiler implements OpCodes
 									insns.add(new LoadVariableInstruction(variable.index));
 								}
 							}
-							if(!found) throwCompileError(s + " cannot be resolved to a variable.");
+							if(!found) throwCompileError(s + " cannot be resolved to a variable in " + var);
 						}
 						else
 							throwCompileError("Global variables are not allowed");

@@ -1,5 +1,6 @@
 #include <time>
 #include <math>
+#include <test2>
 
 double out2(int a,int b)
 {
@@ -13,5 +14,6 @@ double out2(int a,int b)
 
 int main()
 {
+	test2();
 	return out2(1,2);
 }

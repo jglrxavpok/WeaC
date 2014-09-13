@@ -1,13 +1,4 @@
-void out2()
+void test2()
 {
-	out(0);
-}
-
-int test2()
-{
-	out2(0);
-	out(2);
-	out(3);
-	out(4);
-	return 4654;
+	out("Test !");
 }

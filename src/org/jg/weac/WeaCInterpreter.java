@@ -14,6 +14,7 @@ public class WeaCInterpreter implements OpCodes
 	public void run(ArrayList<WeaCLib> included, ArrayList<Instruction> instructions) throws WeaCException
 	{
 		this.included = included;
+		instructions.forEach(System.out::println);
 		System.out.println("exit code: " + invokeMethod(instructions, "__MAIN__", "main", "int()", new Stack<>()));
 	}
 
@@ -25,7 +26,7 @@ public class WeaCInterpreter implements OpCodes
 		HashMap<Integer, WeaCVariable> varMap = new HashMap<>();
 		for(WeaCLib lib : included)
 		{
-			if(lib.getName().equals("__MAIN__")) continue;
+			if(lib.isCompiledDirectly()) continue;
 			if(lib.getName().equals(owner))
 			{
 				for(WeaCMethod method : lib.getMethods())
@@ -54,7 +55,7 @@ public class WeaCInterpreter implements OpCodes
 			if(insn instanceof MethodStartInstruction)
 			{
 				MethodStartInstruction start = (MethodStartInstruction)insn;
-				if(start.getMethod().getName().equals(methodName) && WeaCHelper.areDescEquals(start.getMethod().getDesc().toString(), methodDesc))
+				if(start.getMethod().getOwner().equals(owner) && start.getMethod().getName().equals(methodName) && WeaCHelper.areDescEquals(start.getMethod().getDesc().toString(), methodDesc))
 				{
 					execute = true;
 					invoked = true;
@@ -93,7 +94,7 @@ public class WeaCInterpreter implements OpCodes
 		WeaCValue returnedValue = null;
 		if(!invoked)
 		{
-			WeaCHelper.throwError("No found method: " + methodName + " " + methodDesc, line);
+			WeaCHelper.throwError("No found method: " + owner + "::" + methodName + " " + methodDesc, line);
 			hasReturn = false;
 		}
 		if(hasReturn)

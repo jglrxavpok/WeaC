@@ -24,6 +24,7 @@ public class WeaCHelper
 	{
 		WeaCType aReturnType = WeaCType.get(a.substring(0, a.indexOf("(")));
 		WeaCType bReturnType = WeaCType.get(b.substring(0, b.indexOf("(")));
+		if(aReturnType == null || bReturnType == null) return false;
 		if(!aReturnType.isCompatible(bReturnType) && !bReturnType.isCompatible(aReturnType))
 		{
 			return false;
@@ -321,12 +322,15 @@ public class WeaCHelper
 		{
 			tokensList.add(currentNumber);
 		}
+		tokensList.forEach(System.err::println);
 		return tokensList.toArray(new String[0]);
 	}
 
 	public static boolean isNaN(String currentNumber)
 	{
 		if(currentNumber.equals("NaN")) return true;
+		if(currentNumber.equals(" ")) return true;
+		if(currentNumber.equals("")) return true;
 		try
 		{
 			return Double.isNaN(Double.parseDouble(currentNumber));
