@@ -127,49 +127,110 @@ public class WeaCInterpreter implements OpCodes
 			WeaCValue b = stack.pop();
 			WeaCValue a = stack.pop();
 			Operation op = ((OperationInstruction)insn).getOperation();
-			if(op == Operation.ADDITION)
+			try
 			{
-				stack.push(a.type.add(a, b));
+				if(op == Operation.ADDITION)
+				{
+					stack.push(a.type.add(a, b));
+				}
+				else if(op == Operation.SUBTRACTION)
+				{
+					stack.push(a.type.sub(a, b));
+				}
+				else if(op == Operation.MULTIPLICATION)
+				{
+					stack.push(a.type.mul(a, b));
+				}
+				else if(op == Operation.DIVISION)
+				{
+					stack.push(a.type.div(a, b));
+				}
+				else if(op == Operation.MODULO)
+				{
+					stack.push(a.type.mod(a, b));
+				}
+				else if(op == Operation.LEFT_SHIFT)
+				{
+					stack.push(a.type.lsh(a, b));
+				}
+				else if(op == Operation.RIGHT_SHIFT)
+				{
+					stack.push(a.type.rsh(a, b));
+				}
+				else if(op == Operation.UNSIGNED_RIGHT_SHIFT)
+				{
+					stack.push(a.type.ursh(a, b));
+				}
+				else if(op == Operation.BITWISE_AND)
+				{
+					stack.push(a.type.bitAnd(a, b));
+				}
+				else if(op == Operation.BITWISE_OR)
+				{
+					stack.push(a.type.bitOr(a, b));
+				}
+				else if(op == Operation.BITWISE_XOR)
+				{
+					stack.push(a.type.bitXor(a, b));
+				}
+
+				if(stack.peek() == null) throw new Exception();
 			}
-			else if(op == Operation.SUBTRACTION)
+			catch(Exception e)
 			{
-				stack.push(a.type.sub(a, b));
-			}
-			else if(op == Operation.MULTIPLICATION)
-			{
-				stack.push(a.type.mul(a, b));
-			}
-			else if(op == Operation.DIVISION)
-			{
-				stack.push(a.type.div(a, b));
-			}
-			else if(op == Operation.MODULO)
-			{
-				stack.push(a.type.mod(a, b));
-			}
-			else if(op == Operation.LEFT_SHIFT)
-			{
-				stack.push(a.type.lsh(a, b));
-			}
-			else if(op == Operation.RIGHT_SHIFT)
-			{
-				stack.push(a.type.rsh(a, b));
-			}
-			else if(op == Operation.UNSIGNED_RIGHT_SHIFT)
-			{
-				stack.push(a.type.ursh(a, b));
-			}
-			else if(op == Operation.BITWISE_AND)
-			{
-				stack.push(a.type.bitAnd(a, b));
-			}
-			else if(op == Operation.BITWISE_OR)
-			{
-				stack.push(a.type.bitOr(a, b));
-			}
-			else if(op == Operation.BITWISE_XOR)
-			{
-				stack.push(a.type.bitXor(a, b));
+				try
+				{
+					if(op == Operation.ADDITION)
+					{
+						stack.push(b.type.add(a, b));
+					}
+					else if(op == Operation.SUBTRACTION)
+					{
+						stack.push(b.type.sub(a, b));
+					}
+					else if(op == Operation.MULTIPLICATION)
+					{
+						stack.push(b.type.mul(a, b));
+					}
+					else if(op == Operation.DIVISION)
+					{
+						stack.push(b.type.div(a, b));
+					}
+					else if(op == Operation.MODULO)
+					{
+						stack.push(b.type.mod(a, b));
+					}
+					else if(op == Operation.LEFT_SHIFT)
+					{
+						stack.push(b.type.lsh(a, b));
+					}
+					else if(op == Operation.RIGHT_SHIFT)
+					{
+						stack.push(b.type.rsh(a, b));
+					}
+					else if(op == Operation.UNSIGNED_RIGHT_SHIFT)
+					{
+						stack.push(b.type.ursh(a, b));
+					}
+					else if(op == Operation.BITWISE_AND)
+					{
+						stack.push(b.type.bitAnd(a, b));
+					}
+					else if(op == Operation.BITWISE_OR)
+					{
+						stack.push(b.type.bitOr(a, b));
+					}
+					else if(op == Operation.BITWISE_XOR)
+					{
+						stack.push(b.type.bitXor(a, b));
+					}
+
+					if(stack.peek() == null) throw new Exception();
+				}
+				catch(Exception e1)
+				{
+					WeaCHelper.throwError("Invalid operand '" + op.getID() + "' between " + a.type.getID() + " and " + b.type.getID() + " types", line);
+				}
 			}
 		}
 		else if(insn.getOpcode() == VAR_LOAD)

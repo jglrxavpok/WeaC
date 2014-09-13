@@ -7,7 +7,7 @@ double out2(int a,int b)
 	a = 0;
 	string c = "Test";
 	out(a-b);
-	out(c+"!"-"est");
+	out(a+c+"!"-"est");
 	double d = pow(pow(2,2),2);
 	return d;
 }
