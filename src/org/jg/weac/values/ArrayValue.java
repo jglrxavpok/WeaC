@@ -19,11 +19,16 @@ public class ArrayValue extends WeaCValue
 		return this;
 	}
 
-	public WeaCValue getField(String name)
+	public WeaCValue getField(String name) throws NoSuchFieldException
 	{
 		if(name.equals("length"))
 		{
 			return new WeaCValue(values.size(), WeaCType.intType);
+		}
+		if(name.startsWith("__"))
+		{
+			int index = Integer.parseInt(name.substring(2));
+			return values.get(index);
 		}
 		return super.getField(name);
 	}
@@ -46,5 +51,10 @@ public class ArrayValue extends WeaCValue
 	public void addValue(WeaCValue pop)
 	{
 		values.add(pop);
+	}
+
+	public WeaCValue getValue(int i)
+	{
+		return values.get(i);
 	}
 }

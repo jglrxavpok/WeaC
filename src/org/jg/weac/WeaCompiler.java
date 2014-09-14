@@ -511,7 +511,7 @@ public class WeaCompiler implements OpCodes
 		for(int i = 0; i < chars.length; i++ )
 		{
 			char current = chars[i];
-			if(current == '(')
+			if(current == '(' && !inString)
 			{
 				methodNames.push(buffer.toString());
 				buffer.delete(0, buffer.length());
@@ -525,7 +525,7 @@ public class WeaCompiler implements OpCodes
 			{
 				if(inString) buffer.append(current);
 			}
-			else if(current == ',')
+			else if(current == ',' && !inString)
 			{
 				if(buffer.length() > 0)
 				{
@@ -537,11 +537,11 @@ public class WeaCompiler implements OpCodes
 				}
 				buffer.delete(0, buffer.length());
 			}
-			else if(current == '{')
+			else if(current == '{' && !inString)
 			{
 				buffer.delete(0, buffer.length());
 			}
-			else if(current == '}')
+			else if(current == '}' && !inString)
 			{
 				if(buffer.length() > 0)
 				{
@@ -564,7 +564,7 @@ public class WeaCompiler implements OpCodes
 				insns.add(new BaseInstruction(PUSH_ARRAY));
 				argStack.push("$$LAST_PUSHED$$");
 			}
-			else if(current == ')')
+			else if(current == ')' && !inString)
 			{
 				if(buffer.length() > 0)
 				{
@@ -585,6 +585,7 @@ public class WeaCompiler implements OpCodes
 						desc += "*;";
 					else
 						desc += type.getID() + ";";
+
 				}
 				desc += ")";
 				String method = methodNames.pop();
@@ -639,7 +640,6 @@ public class WeaCompiler implements OpCodes
 		WeaCType type = null;
 		for(String s : l)
 		{
-			System.err.println(">> " + s);
 			if(s.equals(","))
 				continue;
 			else
@@ -673,17 +673,24 @@ public class WeaCompiler implements OpCodes
 							}
 							boolean isField = false;
 							String fieldName = null;
-							if(s.contains("."))
+							if(s.startsWith("\"") && s.endsWith("\""))
+							{
+								insns.add(new LoadConstantInstruction(WeaCType.stringType.newValue(s.substring(1, s.length() - 1))));
+								continue;
+							}
+							else if(s.startsWith("[") && s.endsWith("]"))
+							{
+								newPushVar(insns, s.substring(1, s.length() - 1));
+								insns.add(new BaseInstruction(LOAD_INDEX));
+								continue;
+							}
+							else if(s.contains("."))
 							{
 								isField = true;
 								fieldName = s.substring(s.indexOf('.') + 1);
 								s = s.substring(0, s.indexOf('.'));
 							}
-							if(s.startsWith("\"") && s.endsWith("\""))
-							{
-								insns.add(new LoadConstantInstruction(WeaCType.stringType.newValue(s.substring(1, s.length() - 1))));
-							}
-							else if(s.equals("true") || s.equals("True") || s.equals("TRUE"))
+							if(s.equals("true") || s.equals("True") || s.equals("TRUE"))
 							{
 								insns.add(new LoadConstantInstruction(new WeaCValue(invert ? false : true, WeaCType.boolType)));
 							}

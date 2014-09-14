@@ -365,6 +365,12 @@ public class WeaCType
 			return null;
 		}
 
+		public boolean isCompatible(WeaCType other)
+		{
+			if(other == null) return false;
+			return other instanceof NumberType || other == WeaCType.wildcardType;
+		}
+
 	}
 
 	private static HashMap<String, WeaCType> registred	= new HashMap<>();
@@ -381,6 +387,10 @@ public class WeaCType
 														  {
 															  public boolean isCompatible(WeaCType other)
 															  {
+																  if(other == null)
+																  {
+																	  return false;
+																  }
 																  return true;
 															  }
 														  };
@@ -431,14 +441,17 @@ public class WeaCType
 	 */
 	public boolean isCompatible(WeaCType other)
 	{
-		if(id.contains("[]"))
-		{
-			WeaCType other1 = WeaCType.get(other.getID().replace("[]", ""));
-			return WeaCType.get(id.replace("[]", "")).isCompatible(other1);
-		}
 		if(other == null)
 		{
 			return false;
+		}
+		if(other.getID().contains("[]"))
+		{
+			WeaCType other1 = WeaCType.get(other.getID().replace("[]", ""));
+			if(WeaCHelper.countChar(id, '[') == WeaCHelper.countChar(other.getID(), '['))
+				return other1.isCompatible(WeaCType.get(id.replace("[]", "")));
+			else
+				return false;
 		}
 		return other.compatibles.contains(this) || other == this || other == wildcardType;
 	}

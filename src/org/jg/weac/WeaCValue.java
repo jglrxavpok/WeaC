@@ -12,10 +12,10 @@ public class WeaCValue
 		this.value = type.correctValue(v);
 	}
 
-	public WeaCValue getField(String name)
+	public WeaCValue getField(String name) throws NoSuchFieldException
 	{
 		if(getValue() instanceof WeaCValue) return ((WeaCValue)getValue()).getField(name);
-		return new WeaCValue(null, WeaCType.wildcardType);
+		throw new NoSuchFieldException(name + " field doesn't exist for type " + type.getID());
 	}
 
 	public Object getValue()

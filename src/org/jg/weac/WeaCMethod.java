@@ -3,30 +3,38 @@ package org.jg.weac;
 import java.io.*;
 import java.util.*;
 
-import org.jg.weac.insn.*;
-
 public class WeaCMethod
 {
 
 	public static class MethodDesc
 	{
-		private String   from;
-		private WeaCType returnType;
+		private String					 from;
+		private WeaCType				   returnType;
+		private HashMap<Integer, WeaCType> types = new HashMap<>();
 
 		public MethodDesc(String from)
 		{
 			this.from = from;
 			String returnTypeStr = from.substring(0, from.indexOf("("));
 			returnType = WeaCType.get(returnTypeStr);
+			String[] split = from.substring(from.indexOf("(") + 1, from.indexOf(")")).split(";");
+			for(int i = 0; i < split.length; i++ )
+			{
+				if(split[i].equals("")) continue;
+				types.put(i, WeaCType.get(split[i]));
+			}
 		}
 
 		public MethodDesc(WeaCType returnType, WeaCType... args)
 		{
 			this.returnType = returnType;
 			this.from = returnType.getID() + "(";
+			int index = 0;
 			for(WeaCType type : args)
 			{
 				from += type.getID() + ";";
+				types.put(index, type);
+				index++ ;
 			}
 			from += ")";
 		}
@@ -39,6 +47,12 @@ public class WeaCMethod
 		public WeaCType getReturnType()
 		{
 			return returnType;
+		}
+
+		public WeaCType getType(int i)
+		{
+			if(i > types.size() || !types.containsKey(i)) throw new ArrayIndexOutOfBoundsException(i);
+			return types.get(i);
 		}
 
 	}

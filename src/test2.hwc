@@ -1,3 +1,4 @@
 #ifndef H_TEST2
 void test2();
+void printArrayContents(*[] array);
 #endif

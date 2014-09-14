@@ -4,3 +4,8 @@ void test2()
 {
 	out("Test !");
 }
+
+void printArrayContents(*[] array)
+{
+	out(array+" is "+array.length+" long.");
+}

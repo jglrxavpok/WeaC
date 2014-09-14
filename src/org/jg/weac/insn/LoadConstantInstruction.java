@@ -34,27 +34,27 @@ public class LoadConstantInstruction extends Instruction
 	{
 		WeaCType type = WeaCType.get(buffer.readString());
 		Object value = null;
-		if(constant.type.equals(WeaCType.boolType))
+		if(type.equals(WeaCType.boolType))
 		{
 			value = (buffer.readBoolean());
 		}
-		if(constant.type.equals(WeaCType.intType))
+		if(type.equals(WeaCType.intType))
 		{
 			value = (buffer.readInt());
 		}
-		if(constant.type.equals(WeaCType.floatType))
+		if(type.equals(WeaCType.floatType))
 		{
 			value = (buffer.readFloat());
 		}
-		else if(constant.type.equals(WeaCType.longType))
+		else if(type.equals(WeaCType.longType))
 		{
 			value = (buffer.readLong());
 		}
-		else if(constant.type.equals(WeaCType.doubleType))
+		else if(type.equals(WeaCType.doubleType))
 		{
 			value = (buffer.readDouble());
 		}
-		else if(constant.type.equals(WeaCType.stringType))
+		else if(type.equals(WeaCType.stringType))
 		{
 			value = (buffer.readString());
 		}

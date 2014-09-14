@@ -38,6 +38,7 @@ public class WeaCHelper
 		if(aTokens.length != bTokens.length) return false;
 		for(int i = 0; i < aTokens.length - 1; i++ )
 		{
+			if(countChar(aTokens[i], '[') != countChar(bTokens[i], '[')) return false;
 			WeaCType aType = WeaCType.get(aTokens[i]);
 			WeaCType bType = WeaCType.get(bTokens[i]);
 			if(!aType.isCompatible(bType) && !bType.isCompatible(aType))
@@ -247,12 +248,13 @@ public class WeaCHelper
 		String currentNumber = "";
 		boolean inDecimalPart = false;
 		boolean inString = false;
+		boolean inIndex = false;
 		StringBuffer buffer = new StringBuffer();
 
 		for(int i = 0; i < arg.length(); i++ )
 		{
 			char c = arg.charAt(i);
-			if(c >= '0' && c <= '9' && !inString)
+			if(c >= '0' && c <= '9' && !inString && !inIndex)
 			{
 				if(buffer.length() > 0)
 				{
@@ -260,6 +262,23 @@ public class WeaCHelper
 					buffer.delete(0, buffer.length());
 				}
 				currentNumber += c;
+			}
+			else if(c == '[' && !inString)
+			{
+				if(buffer.length() > 0)
+				{
+					tokensList.add(buffer.toString());
+					buffer.delete(0, buffer.length());
+				}
+				inIndex = true;
+				buffer.append(c);
+			}
+			else if(c == ']' && !inString)
+			{
+				inIndex = false;
+				buffer.append(c);
+				tokensList.add(buffer.toString());
+				buffer.delete(0, buffer.length());
 			}
 			else if(c == '"')
 			{
@@ -367,7 +386,6 @@ public class WeaCHelper
 		{
 			tokensList.add(currentNumber);
 		}
-		tokensList.forEach(System.err::println);
 		return tokensList.toArray(new String[0]);
 	}
 

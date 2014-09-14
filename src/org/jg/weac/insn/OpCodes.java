@@ -24,6 +24,7 @@ public interface OpCodes
 
 	public static final int		 PUSH_ARRAY   = 0x10;
 	public static final int		 GET_FIELD	= 0x11;
+	public static final int		 LOAD_INDEX   = 0x12;
 
 	static HashMap<Integer, String> nameMap	  = new HashMap<>();
 
@@ -49,6 +50,7 @@ public interface OpCodes
 			nameMap.put(NEW_ARRAY, "NEW_ARRAY");
 			nameMap.put(PUSH_ARRAY, "PUSH_ARRAY");
 			nameMap.put(GET_FIELD, "GET_FIELD");
+			nameMap.put(LOAD_INDEX, "LOAD_INDEX");
 		}
 		if(!nameMap.containsKey(opcode))
 		{

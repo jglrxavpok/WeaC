@@ -2,9 +2,11 @@ package org.jg.weac;
 
 import java.util.*;
 
+import org.jg.weac.WeaCMethod.MethodDesc;
 import org.jg.weac.insn.*;
 import org.jg.weac.insn.LabelInstruction.Label;
 import org.jg.weac.insn.OperationInstruction.Operation;
+import org.jg.weac.types.*;
 import org.jg.weac.values.*;
 
 public class WeaCInterpreter implements OpCodes
@@ -16,14 +18,14 @@ public class WeaCInterpreter implements OpCodes
 	private Label			  skipTo;
 	private ArrayValue		 array;
 
-	public void run(WeaCode code) throws WeaCException
+	public void run(WeaCode code) throws Exception
 	{
 		this.included = code.getRequiredLibs();
 		code.getInstructions().forEach(System.out::println);
 		System.out.println("exit code: " + invokeMethod(code.getInstructions(), "test", "main", "int()", new Stack<>()));
 	}
 
-	private WeaCValue invokeMethod(ArrayList<Instruction> insns, String owner, String methodName, String methodDesc, Stack<WeaCValue> stack) throws WeaCException
+	private WeaCValue invokeMethod(ArrayList<Instruction> insns, String owner, String methodName, String methodDesc, Stack<WeaCValue> stack) throws Exception
 	{
 		boolean execute = false;
 		boolean invoked = false;
@@ -36,9 +38,10 @@ public class WeaCInterpreter implements OpCodes
 			{
 				for(WeaCMethod method : lib.getMethods())
 				{
-					if(method.getName().equals(methodName) && WeaCHelper.areDescEquals(methodDesc, method.getDesc().toString()))
+					if(method.getName().equals(methodName) && WeaCHelper.areDescEquals(method.getDesc().toString(), methodDesc))
 					{
 						int n = WeaCHelper.countChar(method.getDesc().toString(), ';');
+						MethodDesc desc = method.getDesc();
 						WeaCValue[] args = new WeaCValue[0];
 						if(n > 0)
 						{
@@ -46,6 +49,7 @@ public class WeaCInterpreter implements OpCodes
 							for(int i = n - 1; i >= 0; i-- )
 							{
 								args[i] = stack.pop();
+								if(!desc.getType(i).isCompatible(args[i].type)) WeaCHelper.throwError("Cannot cast " + args[i].type.getID() + " to " + desc.getType(i).getID(), line);
 							}
 						}
 						WeaCValue returned = method.invoke(args);
@@ -109,7 +113,7 @@ public class WeaCInterpreter implements OpCodes
 		return returnedValue;
 	}
 
-	private void execute(ArrayList<Instruction> insns, Instruction insn, Stack<WeaCValue> stack, HashMap<Integer, WeaCVariable> varMap) throws WeaCException
+	private void execute(ArrayList<Instruction> insns, Instruction insn, Stack<WeaCValue> stack, HashMap<Integer, WeaCVariable> varMap) throws Exception
 	{
 		if(insn.getOpcode() == LABEL)
 		{
@@ -306,6 +310,17 @@ public class WeaCInterpreter implements OpCodes
 			else if(insn.getOpcode() == GET_FIELD)
 			{
 				stack.push(stack.pop().getField(((GetFieldInstruction)insn).getField()));
+			}
+			else if(insn.getOpcode() == LOAD_INDEX)
+			{
+				WeaCValue pop = stack.pop();
+				WeaCValue array = stack.pop();
+				if(array.type instanceof ArrayType)
+				{
+					stack.push(array.getField("__" + (int)pop.getValue()));
+				}
+				else
+					System.err.println("TMP DEBUG: Array param is not actual array");
 			}
 			else
 			{
