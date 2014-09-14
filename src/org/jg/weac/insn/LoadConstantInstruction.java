@@ -54,6 +54,14 @@ public class LoadConstantInstruction extends Instruction
 		{
 			value = (buffer.readDouble());
 		}
+		else if(type.equals(WeaCType.byteType))
+		{
+			value = (buffer.readByte());
+		}
+		else if(type.equals(WeaCType.shortType))
+		{
+			value = (buffer.readShort());
+		}
 		else if(type.equals(WeaCType.stringType))
 		{
 			value = (buffer.readString());
@@ -83,6 +91,14 @@ public class LoadConstantInstruction extends Instruction
 		else if(constant.type.equals(WeaCType.doubleType))
 		{
 			buffer.writeDouble((double)constant.getValue());
+		}
+		else if(constant.type.equals(WeaCType.shortType))
+		{
+			buffer.writeShort((short)constant.getValue());
+		}
+		else if(constant.type.equals(WeaCType.byteType))
+		{
+			buffer.writeByte((byte)constant.getValue());
 		}
 		else if(constant.type.equals(WeaCType.stringType))
 		{

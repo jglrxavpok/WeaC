@@ -36,6 +36,14 @@ public class WeaCType
 				{
 					newVal = ((Long)convert(a.getValue(), this) + (Long)convert(b.getValue(), this));
 				}
+				else if(getID().equals("short"))
+				{
+					newVal = ((Short)convert(a.getValue(), this) + (Short)convert(b.getValue(), this));
+				}
+				else if(getID().equals("byte"))
+				{
+					newVal = ((Byte)convert(a.getValue(), this) + (Byte)convert(b.getValue(), this));
+				}
 				return new WeaCValue(newVal, WeaCType.intType);
 			}
 			return null;
@@ -61,6 +69,14 @@ public class WeaCType
 				else if(getID().equals("long"))
 				{
 					newVal = ((Long)convert(a.getValue(), this) - (Long)convert(b.getValue(), this));
+				}
+				else if(getID().equals("short"))
+				{
+					newVal = ((Short)convert(a.getValue(), this) - (Short)convert(b.getValue(), this));
+				}
+				else if(getID().equals("byte"))
+				{
+					newVal = ((Byte)convert(a.getValue(), this) - (Byte)convert(b.getValue(), this));
 				}
 				return new WeaCValue(newVal, WeaCType.intType);
 			}
@@ -88,6 +104,14 @@ public class WeaCType
 				{
 					newVal = ((Long)convert(a.getValue(), this) * (Long)convert(b.getValue(), this));
 				}
+				else if(getID().equals("short"))
+				{
+					newVal = ((Short)convert(a.getValue(), this) * (Short)convert(b.getValue(), this));
+				}
+				else if(getID().equals("byte"))
+				{
+					newVal = ((Byte)convert(a.getValue(), this) * (Byte)convert(b.getValue(), this));
+				}
 				return new WeaCValue(newVal, WeaCType.intType);
 			}
 			return null;
@@ -113,6 +137,14 @@ public class WeaCType
 				else if(getID().equals("long"))
 				{
 					newVal = ((Long)convert(a.getValue(), this) / (Long)convert(b.getValue(), this));
+				}
+				else if(getID().equals("short"))
+				{
+					newVal = ((Short)convert(a.getValue(), this) / (Short)convert(b.getValue(), this));
+				}
+				else if(getID().equals("byte"))
+				{
+					newVal = ((Byte)convert(a.getValue(), this) / (Byte)convert(b.getValue(), this));
 				}
 				return new WeaCValue(newVal, WeaCType.intType);
 			}
@@ -140,6 +172,14 @@ public class WeaCType
 				{
 					newVal = ((Long)convert(a.getValue(), this) % (Long)convert(b.getValue(), this));
 				}
+				else if(getID().equals("short"))
+				{
+					newVal = ((Short)convert(a.getValue(), this) % (Short)convert(b.getValue(), this));
+				}
+				else if(getID().equals("byte"))
+				{
+					newVal = ((Byte)convert(a.getValue(), this) % (Byte)convert(b.getValue(), this));
+				}
 				return new WeaCValue(newVal, WeaCType.intType);
 			}
 			return null;
@@ -157,6 +197,14 @@ public class WeaCType
 				else if(getID().equals("long"))
 				{
 					newVal = ((Long)convert(a.getValue(), this) << (Long)convert(b.getValue(), this));
+				}
+				else if(getID().equals("short"))
+				{
+					newVal = ((Short)convert(a.getValue(), this) << (Short)convert(b.getValue(), this));
+				}
+				else if(getID().equals("byte"))
+				{
+					newVal = ((Byte)convert(a.getValue(), this) << (Byte)convert(b.getValue(), this));
 				}
 				else
 					return null;
@@ -178,6 +226,14 @@ public class WeaCType
 				{
 					newVal = ((Long)convert(a.getValue(), this) >> (Long)convert(b.getValue(), this));
 				}
+				else if(getID().equals("short"))
+				{
+					newVal = ((Short)convert(a.getValue(), this) >> (Short)convert(b.getValue(), this));
+				}
+				else if(getID().equals("byte"))
+				{
+					newVal = ((Byte)convert(a.getValue(), this) >> (Byte)convert(b.getValue(), this));
+				}
 				else
 					return null;
 				return new WeaCValue(newVal, WeaCType.intType);
@@ -197,6 +253,14 @@ public class WeaCType
 				else if(getID().equals("long"))
 				{
 					newVal = ((Long)convert(a.getValue(), this) >>> (Long)convert(b.getValue(), this));
+				}
+				else if(getID().equals("short"))
+				{
+					newVal = ((Short)convert(a.getValue(), this) >>> (Short)convert(b.getValue(), this));
+				}
+				else if(getID().equals("byte"))
+				{
+					newVal = ((Byte)convert(a.getValue(), this) >>> (Byte)convert(b.getValue(), this));
 				}
 				else
 					return null;
@@ -218,6 +282,14 @@ public class WeaCType
 				{
 					newVal = ((Long)convert(a.getValue(), this) & (Long)convert(b.getValue(), this));
 				}
+				else if(getID().equals("short"))
+				{
+					newVal = ((Short)convert(a.getValue(), this) & (Short)convert(b.getValue(), this));
+				}
+				else if(getID().equals("byte"))
+				{
+					newVal = ((Byte)convert(a.getValue(), this) & (Byte)convert(b.getValue(), this));
+				}
 				else
 					return null;
 				return new WeaCValue(newVal, WeaCType.intType);
@@ -238,6 +310,14 @@ public class WeaCType
 				{
 					newVal = ((Long)convert(a.getValue(), this) | (Long)convert(b.getValue(), this));
 				}
+				else if(getID().equals("short"))
+				{
+					newVal = ((Short)convert(a.getValue(), this) | (Short)convert(b.getValue(), this));
+				}
+				else if(getID().equals("byte"))
+				{
+					newVal = ((Byte)convert(a.getValue(), this) | (Byte)convert(b.getValue(), this));
+				}
 				else
 					return null;
 				return new WeaCValue(newVal, WeaCType.intType);
@@ -257,6 +337,14 @@ public class WeaCType
 				else if(getID().equals("long"))
 				{
 					newVal = ((Long)convert(a.getValue(), this) ^ (Long)convert(b.getValue(), this));
+				}
+				else if(getID().equals("short"))
+				{
+					newVal = ((Short)convert(a.getValue(), this) ^ (Short)convert(b.getValue(), this));
+				}
+				else if(getID().equals("byte"))
+				{
+					newVal = ((Byte)convert(a.getValue(), this) ^ (Byte)convert(b.getValue(), this));
 				}
 				else
 					return null;
@@ -304,6 +392,14 @@ public class WeaCType
 				{
 					return (int)((long)value);
 				}
+				if(value instanceof Short)
+				{
+					return (int)((short)value);
+				}
+				if(value instanceof Byte)
+				{
+					return (int)((byte)value);
+				}
 			}
 			if(type.equals(WeaCType.longType))
 			{
@@ -322,6 +418,14 @@ public class WeaCType
 				if(value instanceof Long)
 				{
 					return (long)((long)value);
+				}
+				if(value instanceof Short)
+				{
+					return (long)((short)value);
+				}
+				if(value instanceof Byte)
+				{
+					return (long)((byte)value);
 				}
 			}
 			if(type.equals(WeaCType.floatType))
@@ -342,6 +446,14 @@ public class WeaCType
 				{
 					return (float)((long)value);
 				}
+				if(value instanceof Short)
+				{
+					return (float)((short)value);
+				}
+				if(value instanceof Byte)
+				{
+					return (float)((byte)value);
+				}
 			}
 			if(type.equals(WeaCType.doubleType))
 			{
@@ -360,6 +472,68 @@ public class WeaCType
 				if(value instanceof Long)
 				{
 					return (double)((long)value);
+				}
+				if(value instanceof Short)
+				{
+					return (double)((short)value);
+				}
+				if(value instanceof Byte)
+				{
+					return (double)((byte)value);
+				}
+			}
+			if(type.equals(WeaCType.shortType))
+			{
+				if(value instanceof Double)
+				{
+					return (short)((double)value);
+				}
+				if(value instanceof Integer)
+				{
+					return (short)((int)value);
+				}
+				if(value instanceof Float)
+				{
+					return (short)((float)value);
+				}
+				if(value instanceof Long)
+				{
+					return (short)((long)value);
+				}
+				if(value instanceof Short)
+				{
+					return (short)((short)value);
+				}
+				if(value instanceof Byte)
+				{
+					return (short)((byte)value);
+				}
+			}
+			if(type.equals(WeaCType.byteType))
+			{
+				if(value instanceof Double)
+				{
+					return (byte)((double)value);
+				}
+				if(value instanceof Integer)
+				{
+					return (byte)((int)value);
+				}
+				if(value instanceof Float)
+				{
+					return (byte)((float)value);
+				}
+				if(value instanceof Long)
+				{
+					return (byte)((long)value);
+				}
+				if(value instanceof Short)
+				{
+					return (byte)((short)value);
+				}
+				if(value instanceof Byte)
+				{
+					return (byte)((byte)value);
 				}
 			}
 			return null;
@@ -394,9 +568,22 @@ public class WeaCType
 																  return true;
 															  }
 														  };
+	public static final NumberType		   shortType	= new NumberType("short");
+	public static final NumberType		   byteType	 = new NumberType("byte");
 
 	static
 	{
+		byteType.addCompatible(intType);
+		byteType.addCompatible(shortType);
+		byteType.addCompatible(longType);
+		byteType.addCompatible(floatType);
+		byteType.addCompatible(doubleType);
+
+		shortType.addCompatible(intType);
+		shortType.addCompatible(longType);
+		shortType.addCompatible(floatType);
+		shortType.addCompatible(doubleType);
+
 		intType.addCompatible(longType);
 		intType.addCompatible(floatType);
 		intType.addCompatible(doubleType);

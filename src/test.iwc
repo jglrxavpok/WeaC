@@ -9,6 +9,8 @@ double out2(int a,int b)
 	printArrayContents(arrayTest);
 	a = 0;
 	string c = "Test";
+	byte byteTest = 257;
+	out(byteTest);
 	out("arrayTest[0][3] is "+arrayTest[0][3]);
 	out(a-b);
 	boolean boolTest = false;

@@ -32,6 +32,37 @@ public class WeaCBuffer implements Flushable, Closeable
 		return out.toByteArray();
 	}
 
+	public short readShort()
+	{
+		if(order == ByteOrder.BIG_ENDIAN)
+		{
+			return (short)(in.read() << 8 | in.read() << 0);
+		}
+		else
+		{
+			return (short)(in.read() << 0 | in.read() << 8);
+		}
+	}
+
+	public void writeShort(short c)
+	{
+		if(order == ByteOrder.BIG_ENDIAN)
+		{
+			out.write(c >> 8 & 0xFF);
+			out.write(c >> 0 & 0xFF);
+		}
+		else if(order == ByteOrder.LITTLE_ENDIAN)
+		{
+			out.write(c >> 0 & 0xFF);
+			out.write(c >> 8 & 0xFF);
+		}
+	}
+
+	public void writeByte(byte b)
+	{
+		out.write(b);
+	}
+
 	public String readString() throws IOException
 	{
 		char[] chars = new char[readInt()];
