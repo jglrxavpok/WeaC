@@ -68,6 +68,15 @@ public class WeaCReader implements OpCodes
 				case IF:
 					in = new IfInstruction(null);
 					break;
+				case ARRAY_STORE:
+					in = new ArrayStoreInstruction(0);
+					break;
+				case NEW_ARRAY:
+					in = new NewArrayInstruction();
+					break;
+				case GET_FIELD:
+					in = new GetFieldInstruction(null);
+					break;
 				default:
 					in = new BaseInstruction(opcode);
 					break;

@@ -32,32 +32,33 @@ public class LoadConstantInstruction extends Instruction
 
 	public void readInfos(WeaCBuffer buffer) throws IOException
 	{
-		constant = new WeaCValue();
-		constant.type = WeaCType.get(buffer.readString());
+		WeaCType type = WeaCType.get(buffer.readString());
+		Object value = null;
 		if(constant.type.equals(WeaCType.boolType))
 		{
-			constant.value = buffer.readBoolean();
+			value = (buffer.readBoolean());
 		}
 		if(constant.type.equals(WeaCType.intType))
 		{
-			constant.value = buffer.readInt();
+			value = (buffer.readInt());
 		}
 		if(constant.type.equals(WeaCType.floatType))
 		{
-			constant.value = buffer.readFloat();
+			value = (buffer.readFloat());
 		}
 		else if(constant.type.equals(WeaCType.longType))
 		{
-			constant.value = buffer.readLong();
+			value = (buffer.readLong());
 		}
 		else if(constant.type.equals(WeaCType.doubleType))
 		{
-			constant.value = buffer.readDouble();
+			value = (buffer.readDouble());
 		}
 		else if(constant.type.equals(WeaCType.stringType))
 		{
-			constant.value = buffer.readString();
+			value = (buffer.readString());
 		}
+		constant = type.newValue(value);
 	}
 
 	public void writeInfos(WeaCBuffer buffer) throws IOException
@@ -65,27 +66,27 @@ public class LoadConstantInstruction extends Instruction
 		buffer.writeString(constant.type.getID());
 		if(constant.type.equals(WeaCType.boolType))
 		{
-			buffer.writeBoolean((boolean)constant.value);
+			buffer.writeBoolean((boolean)constant.getValue());
 		}
 		if(constant.type.equals(WeaCType.intType))
 		{
-			buffer.writeInt((int)constant.value);
+			buffer.writeInt((int)constant.getValue());
 		}
 		if(constant.type.equals(WeaCType.floatType))
 		{
-			buffer.writeFloat((float)constant.value);
+			buffer.writeFloat((float)constant.getValue());
 		}
 		else if(constant.type.equals(WeaCType.longType))
 		{
-			buffer.writeLong((long)constant.value);
+			buffer.writeLong((long)constant.getValue());
 		}
 		else if(constant.type.equals(WeaCType.doubleType))
 		{
-			buffer.writeDouble((double)constant.value);
+			buffer.writeDouble((double)constant.getValue());
 		}
 		else if(constant.type.equals(WeaCType.stringType))
 		{
-			buffer.writeString((String)constant.value);
+			buffer.writeString((String)constant.getValue());
 		}
 	}
 }

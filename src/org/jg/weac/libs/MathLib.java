@@ -17,7 +17,7 @@ public class MathLib extends WeaCLib
 		public WeaCValue invoke(WeaCValue... args)
 		{
 			WeaCValue toRaise = args[0];
-			return new WeaCValue(Math.sqrt((double)NumberType.convert(toRaise.value, WeaCType.doubleType)), WeaCType.doubleType);
+			return new WeaCValue(Math.sqrt((double)NumberType.convert(toRaise.getValue(), WeaCType.doubleType)), WeaCType.doubleType);
 		}
 	}
 
@@ -31,7 +31,7 @@ public class MathLib extends WeaCLib
 		public WeaCValue invoke(WeaCValue... args)
 		{
 			WeaCValue toRaise = args[0];
-			return new WeaCValue(Math.sqrt((double)NumberType.convert(toRaise.value, WeaCType.doubleType)), WeaCType.doubleType);
+			return new WeaCValue(Math.sqrt((double)NumberType.convert(toRaise.getValue(), WeaCType.doubleType)), WeaCType.doubleType);
 		}
 	}
 
@@ -46,7 +46,7 @@ public class MathLib extends WeaCLib
 		{
 			WeaCValue toRaise = args[0];
 			WeaCValue power = args[1];
-			return new WeaCValue(Math.pow((double)NumberType.convert(toRaise.value, WeaCType.doubleType), (int)NumberType.convert(power.value, WeaCType.intType)), WeaCType.doubleType);
+			return new WeaCValue(Math.pow((double)NumberType.convert(toRaise.getValue(), WeaCType.doubleType), (int)NumberType.convert(power.getValue(), WeaCType.intType)), WeaCType.doubleType);
 		}
 	}
 

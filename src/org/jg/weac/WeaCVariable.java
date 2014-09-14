@@ -1,19 +1,28 @@
 package org.jg.weac;
 
-public class WeaCVariable extends WeaCValue
+public class WeaCVariable
 {
 
-	public int	 index;
-	public boolean isLocal;
-	public boolean isGlobal;
-	public String  name;
+	public int	   index;
+	public boolean   isLocal;
+	public boolean   isGlobal;
+	public String	name;
+	public WeaCValue value;
+	public WeaCType  type;
 
-	public WeaCVariable(int index, String name, WeaCType type, boolean isLocal, boolean isGlobal, Object initialValue)
+	public WeaCVariable(int index, String name, WeaCType type, boolean isLocal, boolean isGlobal, WeaCValue initialValue)
 	{
-		super(initialValue, type);
+		this.type = type;
+		this.value = initialValue;
 		this.index = index;
 		this.name = name;
 		this.isLocal = isLocal;
 		this.isGlobal = isGlobal;
+	}
+
+	public String toString()
+	{
+		if(value == null) return "nil";
+		return value.toString();
 	}
 }

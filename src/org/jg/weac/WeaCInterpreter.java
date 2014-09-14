@@ -5,6 +5,7 @@ import java.util.*;
 import org.jg.weac.insn.*;
 import org.jg.weac.insn.LabelInstruction.Label;
 import org.jg.weac.insn.OperationInstruction.Operation;
+import org.jg.weac.values.*;
 
 public class WeaCInterpreter implements OpCodes
 {
@@ -13,6 +14,7 @@ public class WeaCInterpreter implements OpCodes
 	private int				line;
 	private Label			  currentLabel;
 	private Label			  skipTo;
+	private ArrayValue		 array;
 
 	public void run(WeaCode code) throws WeaCException
 	{
@@ -74,7 +76,7 @@ public class WeaCInterpreter implements OpCodes
 						for(int i = n - 1; i >= 0; i-- )
 						{
 							WeaCValue val = stack.pop();
-							WeaCVariable var = new WeaCVariable(i, start.getMethod().getLocals().get(i).name, val.type, true, false, val.value);
+							WeaCVariable var = new WeaCVariable(i, start.getMethod().getLocals().get(i).name, val.type, true, false, val);
 							varMap.put(i, var);
 						}
 					}
@@ -253,7 +255,7 @@ public class WeaCInterpreter implements OpCodes
 			else if(insn.getOpcode() == VAR_LOAD)
 			{
 				WeaCVariable var = varMap.get(((LoadVariableInstruction)insn).getVarIndex());
-				stack.push(var);
+				stack.push(var.value);
 			}
 			else if(insn.getOpcode() == VAR_STORE)
 			{
@@ -263,7 +265,7 @@ public class WeaCInterpreter implements OpCodes
 				{
 					WeaCHelper.throwError("Cannot cast " + val.type.getID() + " to " + var.type.getID(), line);
 				}
-				var.value = var.type.correctValue(val.value);
+				var.value = val.type.newValue(val.getValue());
 				varMap.put(var.index, var);
 			}
 			else if(insn.getOpcode() == LOAD_NULL)
@@ -285,8 +287,25 @@ public class WeaCInterpreter implements OpCodes
 				{
 					WeaCHelper.throwError("Cannot cast " + val.type + " to bool", line);
 				}
-				WeaCValue newVal = new WeaCValue(!(Boolean)val.value, WeaCType.boolType);
+				WeaCValue newVal = new WeaCValue(!(Boolean)val.getValue(), WeaCType.boolType);
 				stack.push(newVal);
+			}
+			else if(insn.getOpcode() == ARRAY_STORE)
+			{
+				array.addValue(stack.pop());
+			}
+			else if(insn.getOpcode() == NEW_ARRAY)
+			{
+				array = new ArrayValue(WeaCType.wildcardType);
+			}
+			else if(insn.getOpcode() == PUSH_ARRAY)
+			{
+				stack.push(array);
+				array = null;
+			}
+			else if(insn.getOpcode() == GET_FIELD)
+			{
+				stack.push(stack.pop().getField(((GetFieldInstruction)insn).getField()));
 			}
 			else
 			{

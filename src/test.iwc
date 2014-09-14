@@ -4,8 +4,8 @@
 
 double out2(int a,int b)
 {
-	int[] arrayTest = {0};
-	out("ArrayTest: "+arrayTest);
+	int[] arrayTest = {{0,1,2,3}};
+	out("Size of: "+arrayTest+" is "+arrayTest.length);
 	a = 0;
 	string c = "Test";
 	out(a-b);

@@ -1,6 +1,7 @@
 package org.jg.weac.types;
 
 import org.jg.weac.*;
+import org.jg.weac.values.*;
 
 public class ArrayType extends WeaCType
 {
@@ -18,4 +19,8 @@ public class ArrayType extends WeaCType
 		return arrayType;
 	}
 
+	public WeaCValue newValue(Object v)
+	{
+		return new ArrayValue(this);
+	}
 }

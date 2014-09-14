@@ -15,7 +15,7 @@ public class StdLib extends WeaCLib
 
 		public WeaCValue invoke(WeaCValue... args)
 		{
-			System.out.println("[Program Out] " + args[0].toString() + " type is " + args[0].type.getID());
+			System.out.println("[Program Out] " + args[0].toString() + " type is " + args[0].type.getID() + " & instanceof " + args[0].getClass().getCanonicalName());
 			return null;
 		}
 

@@ -3,7 +3,7 @@ package org.jg.weac;
 public class WeaCValue
 {
 
-	public Object   value;
+	private Object  value;
 	public WeaCType type;
 
 	public WeaCValue(Object v, WeaCType type)
@@ -12,14 +12,26 @@ public class WeaCValue
 		this.value = type.correctValue(v);
 	}
 
-	public WeaCValue()
+	public WeaCValue getField(String name)
 	{
+		if(getValue() instanceof WeaCValue) return ((WeaCValue)getValue()).getField(name);
+		return new WeaCValue(null, WeaCType.wildcardType);
+	}
+
+	public Object getValue()
+	{
+		return value;
 	}
 
 	public String toString()
 	{
-		if(value == null) return "nil";
-		return value.toString();
+		if(getValue() == null) return "nil";
+		return getValue().toString();
+	}
+
+	public void setValue(Object v)
+	{
+		this.value = v;
 	}
 
 }

@@ -266,7 +266,7 @@ public class WeaCHelper
 				buffer.append('"');
 				inString = !inString;
 			}
-			else if(c == '.' && !inString)
+			else if(c == '.' && !inString && !isNaN(currentNumber))
 			{
 				if(buffer.length() > 0)
 				{
@@ -303,6 +303,50 @@ public class WeaCHelper
 				tokensList.add(buffer.toString() + c);
 				buffer.delete(0, buffer.length());
 			}
+			else if(c == '{' && !inString)
+			{
+				if(buffer.length() > 0)
+				{
+					tokensList.add(buffer.toString());
+					buffer.delete(0, buffer.length());
+				}
+				if(!isNaN(currentNumber))
+				{
+					tokensList.add(currentNumber);
+					currentNumber = "NaN";
+					inDecimalPart = false;
+				}
+				tokensList.add("{");
+			}
+			else if(c == '}' && !inString)
+			{
+				if(buffer.length() > 0)
+				{
+					tokensList.add(buffer.toString());
+					buffer.delete(0, buffer.length());
+				}
+				if(!isNaN(currentNumber))
+				{
+					tokensList.add(currentNumber);
+					currentNumber = "NaN";
+					inDecimalPart = false;
+				}
+				tokensList.add("}");
+			}
+			else if(c == ',' && !inString)
+			{
+				if(!isNaN(currentNumber))
+				{
+					tokensList.add(currentNumber);
+					currentNumber = "NaN";
+					inDecimalPart = false;
+				}
+				if(buffer.length() > 0)
+				{
+					tokensList.add(buffer.toString());
+					buffer.delete(0, buffer.length());
+				}
+			}
 			else
 			{
 				if(!isNaN(currentNumber) && !inString)
@@ -323,6 +367,7 @@ public class WeaCHelper
 		{
 			tokensList.add(currentNumber);
 		}
+		tokensList.forEach(System.err::println);
 		return tokensList.toArray(new String[0]);
 	}
 

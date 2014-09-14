@@ -119,6 +119,7 @@ public class WeaCompiler implements OpCodes
 			}
 		}
 		buffer.delete(0, buffer.length());
+		int parenthesis = 0;
 		for(int i = 0; i < chars.length; i++ )
 		{
 			char current = chars[i];
@@ -160,11 +161,21 @@ public class WeaCompiler implements OpCodes
 					buffer.delete(0, buffer.length());
 					inVariable = false;
 				}
-				else if(current == '{' && !inVariable)
+				else if(current == '(')
+				{
+					parenthesis++ ;
+					buffer.append(current);
+				}
+				else if(current == ')')
+				{
+					parenthesis-- ;
+					buffer.append(current);
+				}
+				else if(current == '{' && !inVariable && parenthesis == 0)
 				{
 					blocks++ ;
 				}
-				else if(current == '}' && !inVariable)
+				else if(current == '}' && !inVariable && parenthesis == 0)
 				{
 					if(blocks == 0)
 					{
@@ -492,12 +503,11 @@ public class WeaCompiler implements OpCodes
 		StringBuffer buffer = new StringBuffer();
 		Stack<String> methodNames = new Stack<>();
 		Stack<String> argStack = new Stack<>();
-		int array = 0;
-		System.out.println(">>>>>>" + str);
 		while(str.charAt(0) == ' ')
 			str = str.substring(1);
 		while(str.charAt(str.length() - 1) == ' ')
 			str = str.substring(0, str.length() - 1);
+		boolean inString = false;
 		for(int i = 0; i < chars.length; i++ )
 		{
 			char current = chars[i];
@@ -506,26 +516,53 @@ public class WeaCompiler implements OpCodes
 				methodNames.push(buffer.toString());
 				buffer.delete(0, buffer.length());
 			}
+			else if(current == '"')
+			{
+				buffer.append(current);
+				inString = !inString;
+			}
 			else if(current == ' ')
 			{
-
+				if(inString) buffer.append(current);
 			}
 			else if(current == ',')
 			{
-				if(array == 0)
+				if(buffer.length() > 0)
 				{
-					if(buffer.length() > 0)
-					{
-						argStack.push(buffer.toString());
-					}
-					else
-					{
-						argStack.push("null");
-					}
-					buffer.delete(0, buffer.length());
+					argStack.push(buffer.toString());
 				}
 				else
-					buffer.append(current);
+				{
+					argStack.push("null");
+				}
+				buffer.delete(0, buffer.length());
+			}
+			else if(current == '{')
+			{
+				buffer.delete(0, buffer.length());
+			}
+			else if(current == '}')
+			{
+				if(buffer.length() > 0)
+				{
+					argStack.push(buffer.toString());
+				}
+				Stack<String> callStack = new Stack<>();
+				while(!argStack.isEmpty())
+				{
+					String pop = argStack.pop();
+					callStack.push(pop);
+				}
+				buffer.delete(0, buffer.length());
+				int index = 0;
+				insns.add(new NewArrayInstruction());
+				while(!callStack.isEmpty())
+				{
+					newPushVar(insns, callStack.pop());
+					insns.add(new ArrayStoreInstruction(index++ ));
+				}
+				insns.add(new BaseInstruction(PUSH_ARRAY));
+				argStack.push("$$LAST_PUSHED$$");
 			}
 			else if(current == ')')
 			{
@@ -597,87 +634,97 @@ public class WeaCompiler implements OpCodes
 
 	private WeaCType newPushVar(ArrayList<Instruction> insns, String var) throws WeaCException
 	{
+		if(var.equals("$$LAST_PUSHED$$")) return WeaCType.wildcardType;
 		ArrayList<String> l = WeaCHelper.getRPNOutputFromInfix(var, (int)sourceLine);
 		WeaCType type = null;
-		Stack<Integer> arrayIndices = new Stack<>();
 		for(String s : l)
 		{
-			if(s.equals(",")) continue;
-			if(s.equals("{"))
-			{
-				arrayIndices.push(0);
+			System.err.println(">> " + s);
+			if(s.equals(","))
 				continue;
-			}
-			else if(s.equals("}"))
-			{
-				arrayIndices.pop();
-				continue;
-			}
-			Operation op = Operation.get(s);
-			if(op != null)
-			{
-				insns.add(new OperationInstruction(op));
-			}
 			else
 			{
-				WeaCValue nbr = WeaCHelper.getAsNumber(s);
-				if(nbr != null)
+				Operation op = Operation.get(s);
+				if(op != null)
 				{
-					insns.add(new LoadConstantInstruction(nbr));
-					type = nbr.type;
-					if(type.isCompatible(nbr.type))
-					{
-						type = nbr.type;
-					}
+					insns.add(new OperationInstruction(op));
 				}
 				else
 				{
-					if(s != null && !s.equals("null"))
+					WeaCValue nbr = WeaCHelper.getAsNumber(s);
+					if(nbr != null)
 					{
-						boolean invert = false;
-						if(s.startsWith("!"))
+						insns.add(new LoadConstantInstruction(nbr));
+						type = nbr.type;
+						if(type.isCompatible(nbr.type))
 						{
-							invert = true;
-							s = s.substring(1);
+							type = nbr.type;
 						}
-						if(s.startsWith("\"") && s.endsWith("\""))
+					}
+					else
+					{
+						if(s != null && !s.equals("null"))
 						{
-							insns.add(new LoadConstantInstruction(new WeaCValue(s.substring(1, s.length() - 1), WeaCType.stringType)));
-						}
-						else if(s.equals("true") || s.equals("True") || s.equals("TRUE"))
-						{
-							insns.add(new LoadConstantInstruction(new WeaCValue(invert ? false : true, WeaCType.boolType)));
-						}
-						else if(s.equals("false") || s.equals("False") || s.equals("FALSE"))
-						{
-							insns.add(new LoadConstantInstruction(new WeaCValue(invert ? true : false, WeaCType.boolType)));
-						}
-						else if(compilingMethod != null)
-						{
-							boolean found = false;
-							for(WeaCVariable variable : compilingMethod.getLocals())
+							boolean invert = false;
+							if(s.startsWith("!"))
 							{
-								if(variable.name.equals(s))
-								{
-									found = true;
-									insns.add(new LoadVariableInstruction(variable.index));
-									if(invert) insns.add(new BaseInstruction(INVERT_BOOL));
-								}
+								invert = true;
+								s = s.substring(1);
 							}
-							if(!found) throwCompileError(s + " cannot be resolved to a variable in " + var);
-						}
-						else
-							throwCompileError("Global variables are not allowed");
-					}
-					else if(s.equals("null"))
-					{
-						insns.add(new BaseInstruction(LOAD_NULL));
-					}
-				}
+							boolean isField = false;
+							String fieldName = null;
+							if(s.contains("."))
+							{
+								isField = true;
+								fieldName = s.substring(s.indexOf('.') + 1);
+								s = s.substring(0, s.indexOf('.'));
+							}
+							if(s.startsWith("\"") && s.endsWith("\""))
+							{
+								insns.add(new LoadConstantInstruction(WeaCType.stringType.newValue(s.substring(1, s.length() - 1))));
+							}
+							else if(s.equals("true") || s.equals("True") || s.equals("TRUE"))
+							{
+								insns.add(new LoadConstantInstruction(new WeaCValue(invert ? false : true, WeaCType.boolType)));
+							}
+							else if(s.equals("false") || s.equals("False") || s.equals("FALSE"))
+							{
+								insns.add(new LoadConstantInstruction(new WeaCValue(invert ? true : false, WeaCType.boolType)));
+							}
+							else if(compilingMethod != null)
+							{
+								boolean found = false;
+								for(WeaCVariable variable : compilingMethod.getLocals())
+								{
+									if(variable.name.equals(s))
+									{
+										found = true;
+										insns.add(new LoadVariableInstruction(variable.index));
+										if(invert) insns.add(new BaseInstruction(INVERT_BOOL));
+									}
+								}
+								if(!found) throwCompileError(s + " cannot be resolved to a variable in " + var);
+							}
+							else
+								throwCompileError("Global variables are not allowed");
 
-				if(!arrayIndices.isEmpty())
-				{
-					insns.add(new ArrayStoreInstruction(ARRAY_STORE));
+							if(isField)
+							{
+								insns.add(new GetFieldInstruction(fieldName));
+							}
+						}
+						else if(s.equals("null"))
+						{
+							insns.add(new BaseInstruction(LOAD_NULL));
+						}
+					}
+
+					// if(!arrayIndices.isEmpty())
+					// {
+					// int index = arrayIndices.pop();
+					// insns.add(new ArrayStoreInstruction(index));
+					// arrayIndices.push(index + 1);
+					// }
 				}
 			}
 		}

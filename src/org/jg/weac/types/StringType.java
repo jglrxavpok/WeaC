@@ -12,17 +12,17 @@ public class StringType extends WeaCType
 
 	public WeaCValue add(WeaCValue a, WeaCValue b)
 	{
-		return new WeaCValue(a.value + "" + b.value, stringType);
+		return new WeaCValue(a.getValue() + "" + b.getValue(), stringType);
 	}
 
 	public WeaCValue sub(WeaCValue a, WeaCValue b)
 	{
-		String value = "" + a.value;
-		return new WeaCValue(value.replace(b.value + "", ""), stringType);
+		String value = "" + a.getValue();
+		return new WeaCValue(value.replace(b.getValue() + "", ""), stringType);
 	}
 
 	public boolean equal(WeaCValue a, WeaCValue b)
 	{
-		return ("" + a.value).equals(b.value + "");
+		return ("" + a.getValue()).equals(b.getValue() + "");
 	}
 }

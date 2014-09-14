@@ -22,19 +22,19 @@ public class WeaCType
 				Object newVal = null;
 				if(getID().equals("int"))
 				{
-					newVal = ((Integer)convert(a.value, this) + (Integer)convert(b.value, this));
+					newVal = ((Integer)convert(a.getValue(), this) + (Integer)convert(b.getValue(), this));
 				}
 				else if(getID().equals("float"))
 				{
-					newVal = ((Float)convert(a.value, this) + (Float)convert(b.value, this));
+					newVal = ((Float)convert(a.getValue(), this) + (Float)convert(b.getValue(), this));
 				}
 				else if(getID().equals("double"))
 				{
-					newVal = ((Double)convert(a.value, this) + (Double)convert(b.value, this));
+					newVal = ((Double)convert(a.getValue(), this) + (Double)convert(b.getValue(), this));
 				}
 				else if(getID().equals("long"))
 				{
-					newVal = ((Long)convert(a.value, this) + (Long)convert(b.value, this));
+					newVal = ((Long)convert(a.getValue(), this) + (Long)convert(b.getValue(), this));
 				}
 				return new WeaCValue(newVal, WeaCType.intType);
 			}
@@ -48,19 +48,19 @@ public class WeaCType
 				Object newVal = null;
 				if(getID().equals("int"))
 				{
-					newVal = ((Integer)convert(a.value, this) - (Integer)convert(b.value, this));
+					newVal = ((Integer)convert(a.getValue(), this) - (Integer)convert(b.getValue(), this));
 				}
 				else if(getID().equals("float"))
 				{
-					newVal = ((Float)convert(a.value, this) - (Float)convert(b.value, this));
+					newVal = ((Float)convert(a.getValue(), this) - (Float)convert(b.getValue(), this));
 				}
 				else if(getID().equals("double"))
 				{
-					newVal = ((Double)convert(a.value, this) - (Double)convert(b.value, this));
+					newVal = ((Double)convert(a.getValue(), this) - (Double)convert(b.getValue(), this));
 				}
 				else if(getID().equals("long"))
 				{
-					newVal = ((Long)convert(a.value, this) - (Long)convert(b.value, this));
+					newVal = ((Long)convert(a.getValue(), this) - (Long)convert(b.getValue(), this));
 				}
 				return new WeaCValue(newVal, WeaCType.intType);
 			}
@@ -74,19 +74,19 @@ public class WeaCType
 				Object newVal = null;
 				if(getID().equals("int"))
 				{
-					newVal = ((Integer)convert(a.value, this) * (Integer)convert(b.value, this));
+					newVal = ((Integer)convert(a.getValue(), this) * (Integer)convert(b.getValue(), this));
 				}
 				else if(getID().equals("float"))
 				{
-					newVal = ((Float)convert(a.value, this) * (Float)convert(b.value, this));
+					newVal = ((Float)convert(a.getValue(), this) * (Float)convert(b.getValue(), this));
 				}
 				else if(getID().equals("double"))
 				{
-					newVal = ((Double)convert(a.value, this) * (Double)convert(b.value, this));
+					newVal = ((Double)convert(a.getValue(), this) * (Double)convert(b.getValue(), this));
 				}
 				else if(getID().equals("long"))
 				{
-					newVal = ((Long)convert(a.value, this) * (Long)convert(b.value, this));
+					newVal = ((Long)convert(a.getValue(), this) * (Long)convert(b.getValue(), this));
 				}
 				return new WeaCValue(newVal, WeaCType.intType);
 			}
@@ -100,19 +100,19 @@ public class WeaCType
 				Object newVal = null;
 				if(getID().equals("int"))
 				{
-					newVal = ((Integer)convert(a.value, this) / (Integer)convert(b.value, this));
+					newVal = ((Integer)convert(a.getValue(), this) / (Integer)convert(b.getValue(), this));
 				}
 				else if(getID().equals("float"))
 				{
-					newVal = ((Float)convert(a.value, this) / (Float)convert(b.value, this));
+					newVal = ((Float)convert(a.getValue(), this) / (Float)convert(b.getValue(), this));
 				}
 				else if(getID().equals("double"))
 				{
-					newVal = ((Double)convert(a.value, this) / (Double)convert(b.value, this));
+					newVal = ((Double)convert(a.getValue(), this) / (Double)convert(b.getValue(), this));
 				}
 				else if(getID().equals("long"))
 				{
-					newVal = ((Long)convert(a.value, this) / (Long)convert(b.value, this));
+					newVal = ((Long)convert(a.getValue(), this) / (Long)convert(b.getValue(), this));
 				}
 				return new WeaCValue(newVal, WeaCType.intType);
 			}
@@ -126,19 +126,19 @@ public class WeaCType
 				Object newVal = null;
 				if(getID().equals("int"))
 				{
-					newVal = ((Integer)convert(a.value, this) % (Integer)convert(b.value, this));
+					newVal = ((Integer)convert(a.getValue(), this) % (Integer)convert(b.getValue(), this));
 				}
 				else if(getID().equals("float"))
 				{
-					newVal = ((Float)convert(a.value, this) % (Float)convert(b.value, this));
+					newVal = ((Float)convert(a.getValue(), this) % (Float)convert(b.getValue(), this));
 				}
 				else if(getID().equals("double"))
 				{
-					newVal = ((Double)convert(a.value, this) % (Double)convert(b.value, this));
+					newVal = ((Double)convert(a.getValue(), this) % (Double)convert(b.getValue(), this));
 				}
 				else if(getID().equals("long"))
 				{
-					newVal = ((Long)convert(a.value, this) % (Long)convert(b.value, this));
+					newVal = ((Long)convert(a.getValue(), this) % (Long)convert(b.getValue(), this));
 				}
 				return new WeaCValue(newVal, WeaCType.intType);
 			}
@@ -152,11 +152,11 @@ public class WeaCType
 				Object newVal = null;
 				if(getID().equals("int"))
 				{
-					newVal = ((Integer)convert(a.value, this) << (Integer)convert(b.value, this));
+					newVal = ((Integer)convert(a.getValue(), this) << (Integer)convert(b.getValue(), this));
 				}
 				else if(getID().equals("long"))
 				{
-					newVal = ((Long)convert(a.value, this) << (Long)convert(b.value, this));
+					newVal = ((Long)convert(a.getValue(), this) << (Long)convert(b.getValue(), this));
 				}
 				else
 					return null;
@@ -172,11 +172,11 @@ public class WeaCType
 				Object newVal = null;
 				if(getID().equals("int"))
 				{
-					newVal = ((Integer)convert(a.value, this) >> (Integer)convert(b.value, this));
+					newVal = ((Integer)convert(a.getValue(), this) >> (Integer)convert(b.getValue(), this));
 				}
 				else if(getID().equals("long"))
 				{
-					newVal = ((Long)convert(a.value, this) >> (Long)convert(b.value, this));
+					newVal = ((Long)convert(a.getValue(), this) >> (Long)convert(b.getValue(), this));
 				}
 				else
 					return null;
@@ -192,11 +192,11 @@ public class WeaCType
 				Object newVal = null;
 				if(getID().equals("int"))
 				{
-					newVal = ((Integer)convert(a.value, this) >>> (Integer)convert(b.value, this));
+					newVal = ((Integer)convert(a.getValue(), this) >>> (Integer)convert(b.getValue(), this));
 				}
 				else if(getID().equals("long"))
 				{
-					newVal = ((Long)convert(a.value, this) >>> (Long)convert(b.value, this));
+					newVal = ((Long)convert(a.getValue(), this) >>> (Long)convert(b.getValue(), this));
 				}
 				else
 					return null;
@@ -212,11 +212,11 @@ public class WeaCType
 				Object newVal = null;
 				if(getID().equals("int"))
 				{
-					newVal = ((Integer)convert(a.value, this) & (Integer)convert(b.value, this));
+					newVal = ((Integer)convert(a.getValue(), this) & (Integer)convert(b.getValue(), this));
 				}
 				else if(getID().equals("long"))
 				{
-					newVal = ((Long)convert(a.value, this) & (Long)convert(b.value, this));
+					newVal = ((Long)convert(a.getValue(), this) & (Long)convert(b.getValue(), this));
 				}
 				else
 					return null;
@@ -232,11 +232,11 @@ public class WeaCType
 				Object newVal = null;
 				if(getID().equals("int"))
 				{
-					newVal = ((Integer)convert(a.value, this) | (Integer)convert(b.value, this));
+					newVal = ((Integer)convert(a.getValue(), this) | (Integer)convert(b.getValue(), this));
 				}
 				else if(getID().equals("long"))
 				{
-					newVal = ((Long)convert(a.value, this) | (Long)convert(b.value, this));
+					newVal = ((Long)convert(a.getValue(), this) | (Long)convert(b.getValue(), this));
 				}
 				else
 					return null;
@@ -252,11 +252,11 @@ public class WeaCType
 				Object newVal = null;
 				if(getID().equals("int"))
 				{
-					newVal = ((Integer)convert(a.value, this) ^ (Integer)convert(b.value, this));
+					newVal = ((Integer)convert(a.getValue(), this) ^ (Integer)convert(b.getValue(), this));
 				}
 				else if(getID().equals("long"))
 				{
-					newVal = ((Long)convert(a.value, this) ^ (Long)convert(b.value, this));
+					newVal = ((Long)convert(a.getValue(), this) ^ (Long)convert(b.getValue(), this));
 				}
 				else
 					return null;
@@ -431,6 +431,11 @@ public class WeaCType
 	 */
 	public boolean isCompatible(WeaCType other)
 	{
+		if(id.contains("[]"))
+		{
+			WeaCType other1 = WeaCType.get(other.getID().replace("[]", ""));
+			return WeaCType.get(id.replace("[]", "")).isCompatible(other1);
+		}
 		if(other == null)
 		{
 			return false;
@@ -513,11 +518,16 @@ public class WeaCType
 
 	public boolean equal(WeaCValue a, WeaCValue b)
 	{
-		return a.value == b.value;
+		return a.getValue() == b.getValue();
 	}
 
 	public Object correctValue(Object v)
 	{
 		return v;
+	}
+
+	public WeaCValue newValue(Object v)
+	{
+		return new WeaCValue(v, this);
 	}
 }

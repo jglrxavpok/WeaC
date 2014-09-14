@@ -23,18 +23,18 @@ public class BoolType extends WeaCType
 
 	public boolean equal(WeaCValue a, WeaCValue b)
 	{
-		if(a.value instanceof Boolean && b.value instanceof Boolean) return a.value == b.value;
+		if(a.getValue() instanceof Boolean && b.getValue() instanceof Boolean) return a.getValue() == b.getValue();
 		if(a.type == this && b.type == this)
 		{
-			return a.value == b.value;
+			return a.getValue() == b.getValue();
 		}
 		else if(a.type == this)
 		{
-			return ((int)NumberType.convert(b.value, WeaCType.intType) != 0) == (boolean)a.value;
+			return ((int)NumberType.convert(b.getValue(), WeaCType.intType) != 0) == (boolean)a.getValue();
 		}
 		else if(b.type == this)
 		{
-			return ((int)NumberType.convert(a.value, WeaCType.intType) != 0) == (boolean)b.value;
+			return ((int)NumberType.convert(a.getValue(), WeaCType.intType) != 0) == (boolean)b.getValue();
 		}
 		return false;
 	}
